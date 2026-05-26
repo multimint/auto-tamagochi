@@ -28,11 +28,11 @@ const SPRITE_MAP: Record<PetStage, React.ComponentType<{ mood?: PetMood; classNa
 };
 
 function getAnimClass(mood: PetMood, pendingEvolution: boolean): string {
-  if (pendingEvolution)  return 'anim-evolve';
-  if (mood === 'dead')   return 'anim-dead';
+  if (pendingEvolution)    return 'anim-evolve';
+  if (mood === 'dead')     return 'anim-dead';
   if (mood === 'sleeping') return 'anim-sleeping';
-  if (mood === 'sick')   return 'anim-sick';
-  if (mood === 'happy')  return 'anim-idle';
+  if (mood === 'sick')     return 'anim-sick';
+  if (mood === 'happy')    return 'anim-idle';
   return 'anim-idle';
 }
 
@@ -68,33 +68,46 @@ export function PetAvatar({
 
   return (
     <div
+      className="pet-avatar-wrapper"
       role="img"
       aria-label={ariaLabel}
       style={{
         position:       'relative',
-        width:          'var(--avatar-size-mobile)',
-        height:         'var(--avatar-size-mobile)',
         display:        'flex',
         alignItems:     'center',
         justifyContent: 'center',
       }}
     >
-      {/* Sprite */}
-      <Sprite
-        mood={mood}
-        className={animClass}
-        style={{ width: '100%', height: '100%' }}
-      />
+      {/* Mood glow aura — wraps the sprite for filter: drop-shadow */}
+      <div
+        className="avatar-mood-glow"
+        data-mood={mood}
+        style={{
+          width:    '100%',
+          height:   '100%',
+          display:  'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Sprite
+          mood={mood}
+          className={animClass}
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
 
       {/* Sparkle particles on evolution */}
       {showSparkles && (
         <>
           {[
-            { x: 10, y: 10, delay: 0 },
-            { x: 80, y: 5,  delay: 0.1 },
+            { x: 10, y: 10,  delay: 0 },
+            { x: 80, y: 5,   delay: 0.1 },
             { x: -10, y: 60, delay: 0.2 },
-            { x: 90, y: 70, delay: 0.15 },
+            { x: 90, y: 70,  delay: 0.15 },
             { x: 40, y: -10, delay: 0.05 },
+            { x: 55, y: 95,  delay: 0.08 },
+            { x: -5, y: 30,  delay: 0.18 },
           ].map((pos, i) => (
             <div
               key={i}

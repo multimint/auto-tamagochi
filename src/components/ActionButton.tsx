@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface ActionButtonProps {
   label:             string;
@@ -10,6 +10,12 @@ interface ActionButtonProps {
   cooldownTotalMs?:  number;
   variant?:          'primary' | 'secondary' | 'danger';
   ariaLabel?:        string;
+}
+
+interface Ripple {
+  id: number;
+  x: number;
+  y: number;
 }
 
 export function ActionButton({
@@ -26,6 +32,8 @@ export function ActionButton({
   const isBlocked = disabled || isOnCooldown;
   const cooldownPct = isOnCooldown ? (cooldownMs / cooldownTotalMs) * 100 : 0;
 
+  const [ripples, setRipples] = useState<Ripple[]>([]);
+
   const bgMap = {
     primary:   'var(--color-surface-alt)',
     secondary: 'var(--color-surface)',
@@ -37,9 +45,24 @@ export function ActionButton({
     danger:    'var(--color-danger)',
   };
 
+  function handleClick(e: React.MouseEvent<HTMLButtonElement>) {
+    if (isBlocked) return;
+
+    // Create ripple from click position
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const id = Date.now() + Math.random();
+
+    setRipples(prev => [...prev, { id, x, y }]);
+    setTimeout(() => setRipples(prev => prev.filter(r => r.id !== id)), 550);
+
+    onClick();
+  }
+
   return (
     <button
-      onClick={isBlocked ? undefined : onClick}
+      onClick={handleClick}
       disabled={isBlocked}
       aria-label={ariaLabel ?? label}
       aria-disabled={isBlocked}
@@ -56,9 +79,20 @@ export function ActionButton({
         borderRadius:  'var(--radius-md)',
         cursor:        isBlocked ? 'not-allowed' : 'pointer',
         opacity:       isBlocked ? 0.5 : 1,
-        transition:    'transform var(--transition-fast), box-shadow var(--transition-fast)',
+        transition:    'transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast)',
         minHeight:     72,
         overflow:      'hidden',
+      }}
+      onMouseEnter={e => {
+        if (!isBlocked) {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-primary)';
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = 'var(--shadow-sm)';
+        }
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLButtonElement).style.borderColor = borderMap[variant];
+        (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+        (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
       }}
       onMouseDown={e => {
         if (!isBlocked) (e.currentTarget as HTMLButtonElement).style.transform = 'scale(0.93)';
@@ -66,11 +100,8 @@ export function ActionButton({
       onMouseUp={e => {
         (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
       }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-      }}
     >
-      {/* Cooldown overlay */}
+      {/* Cooldown bar */}
       {isOnCooldown && (
         <div
           style={{
@@ -85,6 +116,16 @@ export function ActionButton({
           }}
         />
       )}
+
+      {/* Ripple effects */}
+      {ripples.map(r => (
+        <span
+          key={r.id}
+          className="ripple"
+          style={{ left: `${r.x}%`, top: `${r.y}%` }}
+          aria-hidden="true"
+        />
+      ))}
 
       {/* Icon */}
       <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>

@@ -84,201 +84,223 @@ export function SettingsScreen() {
         <div style={{ width: 40 }} />
       </header>
 
+      {/* ── Settings body: single column on mobile, two-column grid on desktop ── */}
       <div className="settings-section">
 
-        {/* Sound & Music */}
-        <section>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
-            🔊 Audio
-          </h2>
-          {toggle('sound-toggle', 'Sound Effects', settings.soundEnabled, v => updateSetting('soundEnabled', v))}
-          {toggle('music-toggle', 'Background Music', settings.musicEnabled, v => updateSetting('musicEnabled', v))}
-        </section>
+        {/* ── LEFT COLUMN: Audio · Theme · Gameplay ── */}
+        <div className="settings-col">
 
-        <div className="settings-divider" />
+          {/* Sound & Music */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
+              🔊 Audio
+            </h2>
+            {toggle('sound-toggle', 'Sound Effects', settings.soundEnabled, v => updateSetting('soundEnabled', v))}
+            {toggle('music-toggle', 'Background Music', settings.musicEnabled, v => updateSetting('musicEnabled', v))}
+          </section>
 
-        {/* Theme */}
-        <section>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
-            🎨 Theme
-          </h2>
-          <div role="radiogroup" aria-label="Theme" style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            {(['pastel', 'dark', 'classic'] as const).map(t => (
-              <button
-                key={t}
-                role="radio"
-                aria-checked={settings.theme === t}
-                onClick={() => updateSetting('theme', t)}
-                style={{
-                  flex:         1,
-                  padding:      'var(--space-2)',
-                  borderRadius: 'var(--radius-md)',
-                  background:   settings.theme === t ? 'var(--color-primary)' : 'var(--color-surface-alt)',
-                  color:        settings.theme === t ? 'white' : 'var(--color-text)',
-                  border:       `2px solid ${settings.theme === t ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  fontFamily:   'var(--font-body)',
-                  fontWeight:   'var(--font-weight-bold)',
-                  fontSize:     'var(--font-size-sm)',
-                  textTransform:'capitalize',
-                  minHeight:    44,
-                }}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-        </section>
+          <div className="settings-divider" />
 
-        <div className="settings-divider" />
-
-        {/* Animations + Difficulty */}
-        <section>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
-            🎮 Gameplay
-          </h2>
-          {toggle('anim-toggle', '✨ Animations', settings.animationsEnabled, v => updateSetting('animationsEnabled', v))}
-
-          <div style={{ marginTop: 'var(--space-3)' }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontWeight: 'var(--font-weight-semi)', fontSize: 'var(--font-size-base)', color: 'var(--color-text)', marginBottom: 'var(--space-2)' }}>
-              🎯 Difficulty
-            </p>
-            <div role="radiogroup" aria-label="Difficulty" style={{ display: 'flex', gap: 'var(--space-2)' }}>
-              {(['easy', 'normal', 'hard'] as const).map(d => (
+          {/* Theme */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
+              🎨 Theme
+            </h2>
+            <div role="radiogroup" aria-label="Theme" style={{ display: 'flex', gap: 'var(--space-2)' }}>
+              {(['pastel', 'dark', 'classic'] as const).map(t => (
                 <button
-                  key={d}
+                  key={t}
                   role="radio"
-                  aria-checked={settings.difficulty === d}
-                  onClick={() => updateSetting('difficulty', d)}
+                  aria-checked={settings.theme === t}
+                  onClick={() => updateSetting('theme', t)}
                   style={{
                     flex:         1,
                     padding:      'var(--space-2)',
                     borderRadius: 'var(--radius-md)',
-                    background:   settings.difficulty === d ? 'var(--color-primary)' : 'var(--color-surface-alt)',
-                    color:        settings.difficulty === d ? 'white' : 'var(--color-text)',
-                    border:       `2px solid ${settings.difficulty === d ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                    background:   settings.theme === t ? 'var(--color-primary)' : 'var(--color-surface-alt)',
+                    color:        settings.theme === t ? 'white' : 'var(--color-text)',
+                    border:       `2px solid ${settings.theme === t ? 'var(--color-primary)' : 'var(--color-border)'}`,
                     fontFamily:   'var(--font-body)',
                     fontWeight:   'var(--font-weight-bold)',
                     fontSize:     'var(--font-size-sm)',
                     textTransform:'capitalize',
                     minHeight:    44,
+                    cursor:       'pointer',
+                    transition:   'background var(--transition-fast), color var(--transition-fast)',
                   }}
                 >
-                  {d}
+                  {t}
                 </button>
               ))}
             </div>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
-              Easy: 0.5× decay · Normal: 1× · Hard: 1.5×
-            </p>
-          </div>
-        </section>
+          </section>
 
-        <div className="settings-divider" />
+          <div className="settings-divider" />
 
-        {/* Rename pet */}
-        <section>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
-            🐾 Rename Pet
-          </h2>
-          <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-            <input
-              type="text"
-              value={renameValue}
-              onChange={e => setRenameValue(e.target.value)}
-              maxLength={12}
-              aria-label="New pet name"
-              style={{ flex: 1 }}
-            />
+          {/* Animations + Difficulty */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
+              🎮 Gameplay
+            </h2>
+            {toggle('anim-toggle', '✨ Animations', settings.animationsEnabled, v => updateSetting('animationsEnabled', v))}
+
+            <div style={{ marginTop: 'var(--space-3)' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 'var(--font-weight-semi)', fontSize: 'var(--font-size-base)', color: 'var(--color-text)', marginBottom: 'var(--space-2)' }}>
+                🎯 Difficulty
+              </p>
+              <div role="radiogroup" aria-label="Difficulty" style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                {(['easy', 'normal', 'hard'] as const).map(d => (
+                  <button
+                    key={d}
+                    role="radio"
+                    aria-checked={settings.difficulty === d}
+                    onClick={() => updateSetting('difficulty', d)}
+                    style={{
+                      flex:         1,
+                      padding:      'var(--space-2)',
+                      borderRadius: 'var(--radius-md)',
+                      background:   settings.difficulty === d ? 'var(--color-primary)' : 'var(--color-surface-alt)',
+                      color:        settings.difficulty === d ? 'white' : 'var(--color-text)',
+                      border:       `2px solid ${settings.difficulty === d ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                      fontFamily:   'var(--font-body)',
+                      fontWeight:   'var(--font-weight-bold)',
+                      fontSize:     'var(--font-size-sm)',
+                      textTransform:'capitalize',
+                      minHeight:    44,
+                      cursor:       'pointer',
+                      transition:   'background var(--transition-fast), color var(--transition-fast)',
+                    }}
+                  >
+                    {d}
+                  </button>
+                ))}
+              </div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
+                Easy: 0.5× decay · Normal: 1× · Hard: 1.5×
+              </p>
+            </div>
+          </section>
+        </div>
+
+        {/* ── RIGHT COLUMN: Rename · Tutorial · Danger Zone ── */}
+        <div className="settings-col">
+
+          <div className="settings-divider" />
+
+          {/* Rename pet */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
+              🐾 Rename Pet
+            </h2>
+            <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+              <input
+                type="text"
+                value={renameValue}
+                onChange={e => setRenameValue(e.target.value)}
+                maxLength={12}
+                aria-label="New pet name"
+                style={{ flex: 1 }}
+              />
+              <button
+                onClick={handleRename}
+                disabled={!renameValue.trim() || renameValue.trim() === pet.name}
+                style={{
+                  padding:      'var(--space-2) var(--space-4)',
+                  background:   'var(--color-primary)',
+                  color:        'white',
+                  borderRadius: 'var(--radius-md)',
+                  fontFamily:   'var(--font-body)',
+                  fontWeight:   'var(--font-weight-bold)',
+                  fontSize:     'var(--font-size-sm)',
+                  border:       'none',
+                  minHeight:    44,
+                  cursor:       'pointer',
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </section>
+
+          <div className="settings-divider" />
+
+          {/* Tutorial */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-text)' }}>
+              📖 Help
+            </h2>
             <button
-              onClick={handleRename}
-              disabled={!renameValue.trim() || renameValue.trim() === pet.name}
+              onClick={() => navigate('tutorial')}
               style={{
-                padding:      'var(--space-2) var(--space-4)',
-                background:   'var(--color-primary)',
-                color:        'white',
-                borderRadius: 'var(--radius-md)',
-                fontFamily:   'var(--font-body)',
-                fontWeight:   'var(--font-weight-bold)',
-                fontSize:     'var(--font-size-sm)',
-                border:       'none',
-                minHeight:    44,
-              }}
-            >
-              Save
-            </button>
-          </div>
-        </section>
-
-        <div className="settings-divider" />
-
-        {/* Tutorial */}
-        <section>
-          <button
-            onClick={() => navigate('tutorial')}
-            style={{
-              width:        '100%',
-              padding:      'var(--space-3)',
-              background:   'var(--color-surface-alt)',
-              border:       '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              fontFamily:   'var(--font-body)',
-              fontWeight:   'var(--font-weight-bold)',
-              fontSize:     'var(--font-size-base)',
-              color:        'var(--color-text)',
-              textAlign:    'left',
-            }}
-          >
-            📖 View Tutorial
-          </button>
-        </section>
-
-        <div className="settings-divider" />
-
-        {/* Danger zone */}
-        <section>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-danger)' }}>
-            ⚠️ Danger Zone
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <button
-              onClick={() => setShowResetModal(true)}
-              style={{
-                padding:      'var(--space-3)',
-                background:   'var(--color-danger-bg)',
-                border:       '1px solid var(--color-danger)',
-                borderRadius: 'var(--radius-md)',
-                color:        'var(--color-danger)',
-                fontFamily:   'var(--font-body)',
-                fontWeight:   'var(--font-weight-bold)',
-                fontSize:     'var(--font-size-sm)',
                 width:        '100%',
-              }}
-            >
-              🔄 Reset Game
-            </button>
-            <button
-              onClick={() => setShowClearModal(true)}
-              style={{
                 padding:      'var(--space-3)',
-                background:   'var(--color-danger-bg)',
-                border:       '1px solid var(--color-danger)',
+                background:   'var(--color-surface-alt)',
+                border:       '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-md)',
-                color:        'var(--color-danger)',
                 fontFamily:   'var(--font-body)',
                 fontWeight:   'var(--font-weight-bold)',
-                fontSize:     'var(--font-size-sm)',
-                width:        '100%',
+                fontSize:     'var(--font-size-base)',
+                color:        'var(--color-text)',
+                textAlign:    'left',
+                cursor:       'pointer',
+                transition:   'background var(--transition-fast)',
               }}
             >
-              🗑️ Clear All Data
+              📖 View Tutorial
             </button>
-          </div>
-        </section>
+          </section>
 
-        {/* Version */}
-        <p style={{ textAlign: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>
-          App Version: 1.0.0
-        </p>
+          <div className="settings-divider" />
+
+          {/* Danger zone */}
+          <section>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-3)', color: 'var(--color-danger)' }}>
+              ⚠️ Danger Zone
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+              <button
+                onClick={() => setShowResetModal(true)}
+                style={{
+                  padding:      'var(--space-3)',
+                  background:   'var(--color-danger-bg)',
+                  border:       '1px solid var(--color-danger)',
+                  borderRadius: 'var(--radius-md)',
+                  color:        'var(--color-danger)',
+                  fontFamily:   'var(--font-body)',
+                  fontWeight:   'var(--font-weight-bold)',
+                  fontSize:     'var(--font-size-sm)',
+                  width:        '100%',
+                  cursor:       'pointer',
+                }}
+              >
+                🔄 Reset Game
+              </button>
+              <button
+                onClick={() => setShowClearModal(true)}
+                style={{
+                  padding:      'var(--space-3)',
+                  background:   'var(--color-danger-bg)',
+                  border:       '1px solid var(--color-danger)',
+                  borderRadius: 'var(--radius-md)',
+                  color:        'var(--color-danger)',
+                  fontFamily:   'var(--font-body)',
+                  fontWeight:   'var(--font-weight-bold)',
+                  fontSize:     'var(--font-size-sm)',
+                  width:        '100%',
+                  cursor:       'pointer',
+                }}
+              >
+                🗑️ Clear All Data
+              </button>
+            </div>
+          </section>
+
+          {/* Version */}
+          <p style={{ textAlign: 'center', fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', marginTop: 'var(--space-2)' }}>
+            App Version: 1.0.0
+          </p>
+        </div>
+
       </div>
 
       {/* Reset confirmation */}

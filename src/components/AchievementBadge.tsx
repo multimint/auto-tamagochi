@@ -28,6 +28,7 @@ export function AchievementBadge({
         display:        'flex',
         flexDirection:  'column',
         alignItems:     'center',
+        justifyContent: 'center',
         gap:            'var(--space-1)',
         padding:        'var(--space-3) var(--space-2)',
         background:     unlocked ? 'var(--color-surface-alt)' : 'var(--color-surface)',
@@ -37,6 +38,9 @@ export function AchievementBadge({
         filter:         unlocked ? 'none' : 'grayscale(1) opacity(0.5)',
         transition:     'border-color var(--transition-fast), filter var(--transition-normal)',
         minHeight:      80,
+        width:          '100%',   /* fill the grid cell */
+        height:         '100%',   /* match tallest sibling in the row */
+        boxSizing:      'border-box',
         position:       'relative',
         overflow:       'hidden',
       }}

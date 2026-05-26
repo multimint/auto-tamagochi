@@ -48,7 +48,7 @@ export function AchievementsScreen() {
       </header>
 
       {/* Progress summary */}
-      <div style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', borderBottom: '1px solid var(--color-border)' }}>
+      <div className="achievements-summary" style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', borderBottom: '1px solid var(--color-border)' }}>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)' }}>
           <strong style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-sm)' }}>{unlockedCount}</strong>
           {' / '}{ALL_ACHIEVEMENTS.length} unlocked
@@ -58,7 +58,7 @@ export function AchievementsScreen() {
       {/* Badge grid */}
       <div className="achievement-grid" role="list" aria-label="Achievements">
         {ALL_ACHIEVEMENTS.map(ach => (
-          <div key={ach.id} role="listitem">
+          <div key={ach.id} role="listitem" style={{ display: 'flex' }}>
             <AchievementBadge
               id={ach.id}
               name={ach.name}

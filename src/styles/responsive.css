@@ -58,7 +58,15 @@
   flex-direction: column;
   align-items: center;
   padding: var(--space-4) var(--space-4) var(--space-2);
-  background: var(--color-bg-alt);
+  /* Animated gradient background */
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-alt),
+    var(--color-surface-alt),
+    var(--color-bg)
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 10s ease infinite;
   position: relative;
 }
 
@@ -173,36 +181,98 @@
   background: var(--color-surface);
 }
 
-/* ── Hamburger Side Menu ── */
+/* ────────────────────────────────────────────────
+   Hamburger Side Menu
+   Uses position:absolute so it clips within the
+   app-container (which is position:relative + overflow:hidden)
+   instead of viewport-relative fixed positioning.
+   ──────────────────────────────────────────────── */
 .side-menu-overlay {
-  position: fixed;
+  position: absolute; /* was fixed — now clips to app-container */
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.45);
   z-index: var(--z-overlay);
   animation: fade-in 150ms ease;
 }
 
 .side-menu {
-  position: fixed;
+  position: absolute; /* was fixed */
   top: 0;
   right: 0;
   bottom: 0;
-  width: 220px;
+  width: 240px;
   background: var(--color-surface);
   z-index: calc(var(--z-overlay) + 1);
   display: flex;
   flex-direction: column;
-  padding: var(--space-6) var(--space-4);
-  gap: var(--space-2);
+  padding: 0 0 var(--space-4);
+  gap: var(--space-1);
   box-shadow: var(--shadow-lg);
   border-left: 1px solid var(--color-border);
-  animation: slide-in-right 200ms ease;
+  animation: slide-in-right 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Mobile menu header — gradient banner with pet info */
+.side-menu__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-accent)
+  );
+  color: var(--color-text-inverse);
+  margin-bottom: var(--space-2);
+}
+
+.side-menu__header-close {
+  align-self: flex-end;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: var(--space-1);
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+.side-menu__header-close:hover { color: white; }
+
+.side-menu__header-name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: white;
+}
+
+.side-menu__header-meta {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.side-menu__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  flex: 1;
 }
 
 @keyframes slide-in-right {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
+
+/* Staggered entrance for menu items */
+.side-menu__nav .side-menu__item:nth-child(1) { animation: stagger-in 220ms 0ms ease both; }
+.side-menu__nav .side-menu__item:nth-child(2) { animation: stagger-in 220ms 50ms ease both; }
+.side-menu__nav .side-menu__item:nth-child(3) { animation: stagger-in 220ms 100ms ease both; }
+.side-menu__nav .side-menu__item:nth-child(4) { animation: stagger-in 220ms 150ms ease both; }
 
 .side-menu__item {
   display: flex;
@@ -219,11 +289,20 @@
   width: 100%;
   text-align: left;
   min-height: 48px;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  font-family: var(--font-body);
 }
 
-.side-menu__item:hover, .side-menu__item:focus-visible {
+.side-menu__item:hover,
+.side-menu__item:focus-visible {
   background: var(--color-surface-hover);
+  transform: translateX(-2px);
+}
+
+.side-menu__footer {
+  margin-top: auto;
+  padding: var(--space-4) var(--space-4) 0;
+  border-top: 1px solid var(--color-border);
 }
 
 /* ── Very small screens ── */
@@ -233,22 +312,320 @@
   .home-screen { padding: var(--space-6) var(--space-4); }
 }
 
-/* ── Desktop enhancements (≥768px) ── */
+/* ══════════════════════════════════════════════════
+   DESKTOP (≥768px)
+   ══════════════════════════════════════════════════ */
 @media (min-width: 768px) {
-  body { padding: var(--space-8) 0; }
-  .app-container {
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    min-height: auto;
-    max-height: 90vh;
+  /* ── Full-screen desktop body ── */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* app handles its own scroll */
   }
-  .screen { max-height: calc(90vh - 56px); }
 
-  /* Constrain tutorial to the app-container on desktop so the
-     navigation footer is never clipped by the 90 vh max-height. */
+  /* ── Base app-container: fill entire viewport ── */
+  .app-container {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  /* ── Without sidebar (home / gameover): centered content, full-screen bg ── */
+  .app-container:not(.has-sidebar) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── With sidebar: two-column grid filling the whole viewport ── */
+  .app-container.has-sidebar {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 1fr;
+    flex-direction: unset; /* override mobile flex */
+  }
+
+  /* Screens fill and scroll within their grid cell */
+  .screen {
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Tutorial fills full viewport height */
   .tutorial-screen {
-    height: 90vh;
+    height: 100vh;
     min-height: 0;
   }
+
+  /* Hide the hamburger toggle button — sidebar replaces it */
+  .menu-toggle-btn {
+    display: none !important;
+  }
+
+  /* ── Pet screen body: fixed-height canvas, no internal scroll ── */
+  .pet-screen-body {
+    align-items: center;
+    overflow-y: hidden;
+    /* flex: 1 + flex-direction: column already set in base styles */
+  }
+
+  /* ── Avatar section: expands to fill all remaining vertical space ── */
+  .avatar-section {
+    flex: 1;
+    min-height: 220px;   /* never collapse below this */
+    width: 100%;
+    align-self: stretch; /* full width for the gradient bg */
+    justify-content: center;
+    padding: var(--space-8) var(--space-6) var(--space-4);
+  }
+
+  /* ── Avatar sprite size on desktop (no inline-style override needed) ── */
+  .pet-avatar-wrapper {
+    width:  var(--avatar-size-desktop);
+    height: var(--avatar-size-desktop);
+  }
+
+  /* ── Stat grid: compact, won't shrink, centred ── */
+  .stat-grid {
+    flex-shrink: 0;
+    max-width: 540px;
+    width: 100%;
+    align-self: center;
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-3);
+    box-sizing: border-box;
+  }
+
+  /* ── Action grid: compact, won't shrink, centred, extra bottom breathing room ── */
+  .action-grid {
+    flex-shrink: 0;
+    max-width: 540px;
+    width: 100%;
+    align-self: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5) var(--space-6);
+    box-sizing: border-box;
+  }
+
+  /* ── Settings: two-column layout on desktop ── */
+  .settings-section {
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--space-6) var(--space-8);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6) var(--space-10);
+    align-items: start;
+  }
+
+  /* Column wrappers inside settings */
+  .settings-col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  /* Hide dividers on desktop — columns have their own spacing */
+  .settings-col .settings-divider {
+    display: none;
+  }
+
+  /* ── Inventory list: cap width ── */
+  .list-screen {
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ── Achievements: 4-column grid, centred ── */
+  .achievement-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+    padding: var(--space-6);
+    gap: var(--space-4);
+    box-sizing: border-box;
+  }
+
+  /* Progress summary: centre on desktop */
+  .achievements-summary {
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
+
+/* ══════════════════════════════════════════════════
+   DESKTOP SIDEBAR COMPONENT
+   ══════════════════════════════════════════════════ */
+
+.desktop-sidebar {
+  display: none; /* hidden on mobile by default */
+}
+
+@media (min-width: 768px) {
+  .desktop-sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    background: var(--color-surface-alt);
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-4) var(--space-3) var(--space-4);
+    gap: var(--space-1);
+  }
+
+  /* ── Pet info header card ── */
+  .desktop-sidebar__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3);
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    margin-bottom: var(--space-3);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .desktop-sidebar__evo-ring {
+    margin-bottom: var(--space-1);
+  }
+
+  /* ── Nav section ── */
+  .desktop-sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    flex: 1;
+  }
+
+  .desktop-sidebar__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semi);
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    min-height: 48px;
+    overflow: hidden;
+    /* spring bounce on hover */
+    transition:
+      background var(--transition-fast),
+      transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      color var(--transition-fast);
+    /* stagger entrance */
+    animation: stagger-in 250ms ease both;
+  }
+
+  .desktop-sidebar__item:hover:not(.active) {
+    background: var(--color-surface-hover);
+    transform: translateX(3px);
+  }
+
+  .desktop-sidebar__item:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  /* Active state */
+  .desktop-sidebar__item.active {
+    background: var(--color-surface-hover);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+  }
+
+  /* Active left-border indicator */
+  .desktop-sidebar__item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    background: var(--color-primary);
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+    animation: slide-in-left 200ms ease;
+  }
+
+  .desktop-sidebar__item-emoji {
+    font-size: 1.1rem;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .desktop-sidebar__item-label {
+    flex: 1;
+  }
+
+  /* ── Footer ── */
+  .desktop-sidebar__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .desktop-sidebar__version {
+    opacity: 0.6;
+  }
+}
+
+/* ── Pet avatar wrapper: size controlled via CSS (overridden at desktop breakpoint) ── */
+.pet-avatar-wrapper {
+  width:  var(--avatar-size-mobile);
+  height: var(--avatar-size-mobile);
+}
+
+/* ── Ripple effect (used by ActionButton) ── */
+.ripple {
+  position: absolute;
+  width: 200%;
+  padding-top: 200%;
+  border-radius: 50%;
+  background: rgba(192, 132, 252, 0.28);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-expand 500ms ease-out forwards;
+  pointer-events: none;
+}
+
+/* ── Avatar mood glow ── */
+.avatar-mood-glow {
+  transition: filter 0.8s ease;
+  filter: drop-shadow(0 0 8px rgba(192, 132, 252, 0.35));
+}
+.avatar-mood-glow[data-mood="happy"]    { filter: drop-shadow(0 0 14px rgba(249, 168, 212, 0.8)); }
+.avatar-mood-glow[data-mood="sick"]     { filter: drop-shadow(0 0 12px rgba(134, 239, 172, 0.55)); animation: pulse-soft 2s ease-in-out infinite; }
+.avatar-mood-glow[data-mood="sleeping"] { filter: drop-shadow(0 0 10px rgba(186, 230, 253, 0.65)); }
+.avatar-mood-glow[data-mood="sad"]      { filter: drop-shadow(0 0 10px rgba(203, 213, 225, 0.6)); }
+.avatar-mood-glow[data-mood="dead"]     { filter: grayscale(1) brightness(0.6); }

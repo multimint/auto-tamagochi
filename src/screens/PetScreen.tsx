@@ -184,6 +184,7 @@ export function PetScreen() {
             strokeWidth={3}
           />
           <button
+            className="menu-toggle-btn"
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             aria-expanded={menuOpen}
@@ -199,22 +200,39 @@ export function PetScreen() {
         <>
           <div className="side-menu-overlay" onClick={() => setMenuOpen(false)} />
           <nav className="side-menu" role="navigation" aria-label="Main navigation">
-            <button onClick={() => setMenuOpen(false)} aria-label="Close menu" style={{ alignSelf: 'flex-end', fontSize: 22, color: 'var(--color-text-muted)', background: 'none', border: 'none', padding: 'var(--space-1)', marginBottom: 'var(--space-2)' }}>×</button>
-            {([
-              ['inventory',    '📦', 'Inventory'],
-              ['achievements', '🏆', 'Achievements'],
-              ['settings',     '⚙️', 'Settings'],
-              ['tutorial',     '❓', 'Tutorial'],
-            ] as const).map(([screen, emoji, label]) => (
+
+            {/* Gradient header showing pet info */}
+            <div className="side-menu__header">
               <button
-                key={screen}
-                className="side-menu__item"
-                onClick={() => { navigate(screen); setMenuOpen(false); }}
-              >
-                <span aria-hidden="true">{emoji}</span> {label}
-              </button>
-            ))}
-            <div style={{ marginTop: 'auto', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--color-border)' }}>
+                className="side-menu__header-close"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close menu"
+              >×</button>
+              <StageBadge stage={pet.stage} />
+              <span className="side-menu__header-name">{pet.name}</span>
+              <span className="side-menu__header-meta">{formatAge(pet.ageMinutes)}</span>
+            </div>
+
+            {/* Nav items */}
+            <div className="side-menu__nav">
+              {([
+                ['inventory',    '📦', 'Inventory'],
+                ['achievements', '🏆', 'Achievements'],
+                ['settings',     '⚙️',  'Settings'],
+                ['tutorial',     '❓', 'Tutorial'],
+              ] as const).map(([screen, emoji, label]) => (
+                <button
+                  key={screen}
+                  className="side-menu__item"
+                  onClick={() => { navigate(screen); setMenuOpen(false); }}
+                >
+                  <span aria-hidden="true">{emoji}</span> {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="side-menu__footer">
               <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>
                 Gen {pet.generation} · v1.0.0
               </p>

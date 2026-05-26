@@ -103,6 +103,33 @@
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* ── New interactive effect keyframes ── */
+
+/* Animated gradient background (avatar-section) */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Ripple expand (ActionButton click) */
+@keyframes ripple-expand {
+  from { transform: translate(-50%, -50%) scale(0); opacity: 0.7; }
+  to   { transform: translate(-50%, -50%) scale(1);  opacity: 0; }
+}
+
+/* Stagger-in slide from right (menu items, sidebar items) */
+@keyframes stagger-in {
+  from { transform: translateX(16px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Active sidebar indicator slide from top (scaleY) */
+@keyframes slide-in-left {
+  from { transform: scaleY(0); opacity: 0; }
+  to   { transform: scaleY(1); opacity: 1; }
+}
+
 /* ── Utility Classes ── */
 
 .anim-idle      { animation: float        3s ease-in-out infinite; }
