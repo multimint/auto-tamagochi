@@ -4,10 +4,13 @@ import { loadSave } from '@/utils/localStorage';
 import { nowMs } from '@/utils/timeUtils';
 import { createFreshSave } from '@/reducer/initialState';
 import { EggSprite } from '@/assets/sprites/EggSprite';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 export function HomeScreen() {
   const { dispatch, pet } = useGame();
   const navigate = useNavigate();
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const formMaxWidth = isDesktop ? 480 : 320;
   const [petName, setPetName] = useState('');
   const [nameError, setNameError] = useState('');
   const existingSave = loadSave();
@@ -71,7 +74,7 @@ export function HomeScreen() {
       </div>
 
       {/* Name input */}
-      <div style={{ width: '100%', maxWidth: 320 }}>
+      <div style={{ width: '100%', maxWidth: formMaxWidth }}>
         <label
           htmlFor="pet-name-input"
           style={{
@@ -117,7 +120,7 @@ export function HomeScreen() {
         disabled={!petName.trim()}
         style={{
           width:        '100%',
-          maxWidth:     320,
+          maxWidth:     formMaxWidth,
           padding:      'var(--space-4)',
           background:   petName.trim() ? 'var(--color-primary)' : 'var(--color-border)',
           color:        'var(--color-text-inverse)',
@@ -139,7 +142,7 @@ export function HomeScreen() {
           onClick={handleContinue}
           style={{
             width:        '100%',
-            maxWidth:     320,
+            maxWidth:     formMaxWidth,
             padding:      'var(--space-3)',
             background:   'var(--color-surface)',
             color:        'var(--color-text)',
