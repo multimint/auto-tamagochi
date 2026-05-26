@@ -1,0 +1,171 @@
+/* ── Pastel Theme (default) ── */
+:root {
+  /* Background */
+  --color-bg:            #FFF0F5;
+  --color-bg-alt:        #F5E6FF;
+
+  /* Surfaces */
+  --color-surface:       #FFFFFF;
+  --color-surface-alt:   #FDF0FF;
+  --color-surface-hover: #F3E8FF;
+
+  /* Borders */
+  --color-border:        #E8D5E8;
+  --color-border-focus:  #C084FC;
+
+  /* Text */
+  --color-text:          #3D2B3D;
+  --color-text-muted:    #8B6B8B;
+  --color-text-inverse:  #FFFFFF;
+
+  /* Primary (purple) */
+  --color-primary:       #C084FC;
+  --color-primary-hover: #A855F7;
+  --color-primary-active:#9333EA;
+
+  /* Accent (pink) */
+  --color-accent:        #F9A8D4;
+  --color-accent-hover:  #F472B6;
+
+  /* Semantic colors */
+  --color-success:       #86EFAC;
+  --color-success-bg:    #F0FDF4;
+  --color-warning:       #FDE68A;
+  --color-warning-bg:    #FFFBEB;
+  --color-danger:        #FCA5A5;
+  --color-danger-bg:     #FEF2F2;
+  --color-info:          #BAE6FD;
+  --color-info-bg:       #F0F9FF;
+
+  /* Stat bar fill colors */
+  --stat-high:    #86EFAC;
+  --stat-mid:     #FDE68A;
+  --stat-low:     #FCA5A5;
+  --stat-zero:    #EF4444;
+
+  /* Stage badge colors */
+  --stage-egg:    #E8D5FF;
+  --stage-baby:   #FFD6E7;
+  --stage-child:  #C8F7C5;
+  --stage-teen:   #A5D8FF;
+  --stage-adult:  #FFE4A1;
+  --stage-elder:  #FFD4A3;
+  --stage-dead:   #D1D5DB;
+
+  /* Typography */
+  --font-display: 'Press Start 2P', 'Courier New', monospace;
+  --font-body:    'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --font-size-xs:   0.625rem;
+  --font-size-sm:   0.75rem;
+  --font-size-md:   0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg:   1.125rem;
+  --font-size-xl:   1.25rem;
+  --font-size-2xl:  1.5rem;
+  --font-size-3xl:  2rem;
+  --font-weight-normal: 400;
+  --font-weight-semi:   600;
+  --font-weight-bold:   700;
+  --font-weight-black:  800;
+
+  /* Spacing */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Border radius */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(192,132,252,0.12), 0 1px 2px rgba(192,132,252,0.08);
+  --shadow-md:  0 4px 12px rgba(192,132,252,0.18), 0 2px 4px rgba(192,132,252,0.10);
+  --shadow-lg:  0 8px 24px rgba(192,132,252,0.22), 0 4px 8px rgba(192,132,252,0.12);
+  --shadow-inset: inset 0 2px 6px rgba(192,132,252,0.15);
+  --shadow-glow:  0 0 16px rgba(192,132,252,0.5);
+
+  /* Transitions */
+  --transition-fast:   100ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms ease;
+  --transition-bounce: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-index */
+  --z-base:    1;
+  --z-above:   10;
+  --z-overlay: 100;
+  --z-modal:   200;
+  --z-toast:   300;
+
+  /* Pet avatar dimensions */
+  --avatar-size-mobile:  140px;
+  --avatar-size-desktop: 180px;
+}
+
+/* ── Dark Theme ── */
+[data-theme="dark"] {
+  --color-bg:            #1A0A1A;
+  --color-bg-alt:        #250F25;
+  --color-surface:       #2D1A2D;
+  --color-surface-alt:   #3D2B3D;
+  --color-surface-hover: #4A3A4A;
+  --color-border:        #5B3D5B;
+  --color-border-focus:  #C084FC;
+  --color-text:          #F3E8FF;
+  --color-text-muted:    #C084FC;
+  --color-text-inverse:  #1A0A1A;
+  --color-primary:       #A855F7;
+  --color-primary-hover: #9333EA;
+  --color-primary-active:#7C3AED;
+  --color-accent:        #F472B6;
+  --color-accent-hover:  #EC4899;
+  --color-success:       #4ADE80;
+  --color-success-bg:    #052E16;
+  --color-warning:       #FCD34D;
+  --color-warning-bg:    #1C1400;
+  --color-danger:        #F87171;
+  --color-danger-bg:     #1C0A0A;
+  --stat-high:           #4ADE80;
+  --stat-mid:            #FCD34D;
+  --stat-low:            #F87171;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+}
+
+/* ── Classic Theme ── */
+[data-theme="classic"] {
+  --color-bg:          #C0C0C0;
+  --color-bg-alt:      #AAAAAA;
+  --color-surface:     #DFDFDF;
+  --color-surface-alt: #EFEFEF;
+  --color-surface-hover: #F5F5F5;
+  --color-border:      #808080;
+  --color-border-focus:#000080;
+  --color-text:        #000000;
+  --color-text-muted:  #444444;
+  --color-primary:     #000080;
+  --color-primary-hover:#0000AA;
+  --color-accent:      #800000;
+  --color-success:     #008000;
+  --color-warning:     #808000;
+  --color-danger:      #800000;
+  --font-display:      'Courier New', monospace;
+  --shadow-md:         2px 2px 0px #808080;
+  --shadow-lg:         3px 3px 0px #606060;
+  --radius-sm:         0px;
+  --radius-md:         0px;
+  --radius-lg:         0px;
+  --radius-xl:         0px;
+  --radius-full:       0px;
+}
