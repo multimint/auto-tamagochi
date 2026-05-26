@@ -89,9 +89,22 @@ export function TutorialScreen() {
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 'var(--space-3) var(--space-4)' }}>
         <button
           onClick={finish}
-          style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
+          aria-label="Skip tutorial"
+          style={{
+            fontFamily:   'var(--font-body)',
+            fontSize:     'var(--font-size-sm)',
+            fontWeight:   'var(--font-weight-semi)',
+            color:        'var(--color-text-muted)',
+            background:   'transparent',
+            border:       '1.5px solid var(--color-border)',
+            borderRadius: 'var(--radius-full)',
+            padding:      'var(--space-1) var(--space-4)',
+            cursor:       'pointer',
+            lineHeight:   1.4,
+            letterSpacing: '0.01em',
+          }}
         >
-          ✕ Skip Tutorial
+          Skip tutorial
         </button>
       </div>
 

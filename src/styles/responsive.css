@@ -244,4 +244,11 @@
     max-height: 90vh;
   }
   .screen { max-height: calc(90vh - 56px); }
+
+  /* Constrain tutorial to the app-container on desktop so the
+     navigation footer is never clipped by the 90 vh max-height. */
+  .tutorial-screen {
+    height: 90vh;
+    min-height: 0;
+  }
 }
