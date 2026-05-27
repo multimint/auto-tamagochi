@@ -57,8 +57,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-4) var(--space-4) var(--space-2);
-  /* Animated gradient background */
+  padding: 0;                 /* cat-walk-stage fills absolutely — no padding needed */
+  /* Walking stage — cat roams absolutely inside */
+  position: relative;
+  overflow: hidden;
+  height: 220px;              /* firm height so absolute children have a reference */
+  min-height: 220px;          /* fallback */
+  flex-shrink: 0;             /* never let flex squeeze it */
+  /* Animated gradient background (visible behind room SVG if room fails to load) */
   background: linear-gradient(
     135deg,
     var(--color-bg-alt),
@@ -67,7 +73,26 @@
   );
   background-size: 300% 300%;
   animation: gradient-shift 10s ease infinite;
-  position: relative;
+}
+
+/* Depth-hint floor glow at bottom of walk stage */
+.avatar-section::after {
+  content: '';
+  position: absolute;
+  bottom: 8%;
+  left: 10%;
+  width: 80%;
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(192,132,252,0.20) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* cat-walk-stage fills the whole section */
+.cat-walk-stage {
+  position: absolute;
+  inset: 0;
 }
 
 .stat-grid {
@@ -380,17 +405,19 @@
   /* ── Avatar section: expands to fill all remaining vertical space ── */
   .avatar-section {
     flex: 1;
-    min-height: 220px;   /* never collapse below this */
+    height: auto;        /* let flex:1 drive height on desktop */
+    min-height: 320px;   /* more walking room on desktop */
     width: 100%;
-    align-self: stretch; /* full width for the gradient bg */
+    align-self: stretch;
     justify-content: center;
-    padding: var(--space-8) var(--space-6) var(--space-4);
+    padding: 0;          /* cat fills the whole stage */
+    flex-shrink: 0;      /* keep consistent with mobile */
   }
 
-  /* ── Avatar sprite size on desktop (no inline-style override needed) ── */
+  /* ── Avatar sprite size on desktop ── */
   .pet-avatar-wrapper {
-    width:  var(--avatar-size-desktop);
-    height: var(--avatar-size-desktop);
+    width:  160px;
+    height: 160px;
   }
 
   /* ── Stat grid: compact, won't shrink, centred ── */
@@ -601,10 +628,10 @@
   }
 }
 
-/* ── Pet avatar wrapper: size controlled via CSS (overridden at desktop breakpoint) ── */
+/* ── Pet avatar wrapper: the cat sprite size (overridden at desktop breakpoint) ── */
 .pet-avatar-wrapper {
-  width:  var(--avatar-size-mobile);
-  height: var(--avatar-size-mobile);
+  width:  110px;
+  height: 110px;
 }
 
 /* ── Ripple effect (used by ActionButton) ── */

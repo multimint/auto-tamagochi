@@ -1,4 +1,5 @@
 import type { PetMood } from '@/types';
+import { P, OX, OY, PALETTES, C, px, row, getSickPalette } from './catPixelUtils';
 
 interface SpriteProps {
   mood?: PetMood;
@@ -6,112 +7,194 @@ interface SpriteProps {
   style?: React.CSSProperties;
 }
 
+/**
+ * Teen cat — gray tuxedo, longer/leaner proportions,
+ * medium curved tail, 2 whiskers/side, slight attitude lean.
+ */
 export function TeenSprite({ mood = 'neutral', className, style }: SpriteProps) {
-  const skinFill   = mood === 'sick' ? '#E8F5E9' : '#FFE4EF';
-  const outfitFill = mood === 'sick' ? '#B3D9F5' : '#A5D8FF';
+  const isSick     = mood === 'sick';
+  const isSleeping = mood === 'sleeping';
   const isDead     = mood === 'dead';
-  const filter     = isDead ? 'grayscale(1) brightness(0.7)' : undefined;
+  const isHappy    = mood === 'happy';
+  const isSad      = mood === 'sad';
+
+  const base = PALETTES.teen;
+  const pal = isDead ? PALETTES.dead
+    : isSick ? getSickPalette(base)
+    : base;
+  const { fur, furDk, belly, earInner, stripe } = pal;
+  const tuxedo = 'tuxedo' in pal ? (pal as typeof PALETTES.teen).tuxedo : '#FFFFFF';
+
+  const wx = (col: number) => OX + col * P;
+  const wy = (r: number, off = 0) => OY + r * P + off;
 
   return (
     <svg
       viewBox="0 0 120 120"
       xmlns="http://www.w3.org/2000/svg"
+      shapeRendering="crispEdges"
       className={className}
-      style={{ ...style, filter }}
+      style={style}
       role="img"
-      aria-label="Teen pet"
+      aria-label={`Teen cat, ${mood}`}
     >
       {/* Shadow */}
-      <ellipse cx="60" cy="117" rx="22" ry="4" fill="#60B4E8" opacity="0.3" />
+      <ellipse cx="60" cy="113" rx="24" ry="5" fill={C.shadow} />
 
-      {/* Shoes */}
-      <rect x="30" y="107" width="22" height="10" rx="4" fill="#3D2B3D" />
-      <rect x="68" y="107" width="22" height="10" rx="4" fill="#3D2B3D" />
+      {/* Medium curved tail */}
+      <g className="cat-tail">
+        {row(13, 8,  2, fur)}
+        {row(14, 9,  2, furDk)}
+        {row(14,10,  2, fur)}
+        {row(13,11,  2, furDk)}
+        {row(12,12,  3, fur)}
+        {row(11,13,  3, furDk)}
+        {row(10,14,  3, fur)}
+        {row(9, 15,  2, furDk)}
+      </g>
 
-      {/* Legs */}
-      <rect x="34" y="82" width="16" height="32" rx="6" fill={skinFill} stroke="#FFB3C6" strokeWidth="1.5" />
-      <rect x="70" y="82" width="16" height="32" rx="6" fill={skinFill} stroke="#FFB3C6" strokeWidth="1.5" />
+      {/* Taller/leaner body */}
+      <g className="cat-body">
+        {row(4,  7, 8,  fur)}
+        {row(3,  8, 10, fur)}
+        {row(3,  9, 10, fur)}
+        {row(3, 10, 10, fur)}
+        {row(3, 11, 10, fur)}
+        {row(4, 12, 8,  fur)}
 
-      {/* Body */}
-      <rect x="30" y="54" width="60" height="52" rx="12" fill={outfitFill} stroke="#60B4E8" strokeWidth="2.5" />
+        {/* tuxedo belly — white patch */}
+        {row(5,  8, 6, tuxedo)}
+        {row(5,  9, 6, tuxedo)}
+        {row(5, 10, 6, tuxedo)}
+        {row(5, 11, 5, tuxedo)}
 
-      {/* Left arm raised */}
-      <rect x="10" y="40" width="23" height="13" rx="6" fill={skinFill} stroke="#FFB3C6" strokeWidth="1.5" transform="rotate(-45 21 46)" />
-      {/* Right arm down */}
-      <rect x="87" y="64" width="22" height="13" rx="6" fill={skinFill} stroke="#FFB3C6" strokeWidth="1.5" transform="rotate(10 98 70)" />
+        {/* stripes on sides */}
+        {row(3, 8, 1, stripe)}
+        {px(12, 8, stripe)}
+        {row(3,10, 1, stripe)}
+        {px(12,10, stripe)}
+      </g>
+
+      {/* Paws */}
+      <g className="cat-paws">
+        {row(3,13, 3, tuxedo)}
+        {row(8,13, 3, tuxedo)}
+        {px(4,13, furDk)}
+        {px(9,13, furDk)}
+      </g>
 
       {/* Head */}
-      <circle cx="60" cy="30" r="26" fill={skinFill} stroke="#FFB3C6" strokeWidth="2.5" />
+      <g className="cat-head">
 
-      {/* Headphone band */}
-      <rect x="34" y="16" width="52" height="7" rx="7" fill="#3D2B3D" />
-      {/* Left cup */}
-      <rect x="28" y="22" width="12" height="18" rx="5" fill="#3D2B3D" />
-      {/* Right cup */}
-      <rect x="80" y="22" width="12" height="18" rx="5" fill="#3D2B3D" />
+        {/* Ears — slightly taller for teen */}
+        <g className="cat-ear-l">
+          {px(3, 0, fur)}
+          {px(2, 1, fur)}
+          {row(2, 1, 3, fur)}
+          {row(1, 2, 4, fur)}
+          {px(3, 1, earInner)}
+          {row(3, 2, 2, earInner)}
+        </g>
+        <g className="cat-ear-r">
+          {px(12,0, fur)}
+          {row(11,1, 3, fur)}
+          {row(11,2, 4, fur)}
+          {px(12,1, earInner)}
+          {row(11,2, 2, earInner)}
+        </g>
 
-      {/* Spiky hair */}
-      <rect x="38" y="4"  width="8"  height="16" rx="3" fill="#5C3317" transform="rotate(-15 42 12)" />
-      <rect x="46" y="2"  width="9"  height="18" rx="3" fill="#5C3317" transform="rotate(-5 50 11)" />
-      <rect x="56" y="1"  width="9"  height="18" rx="3" fill="#5C3317" />
-      <rect x="66" y="2"  width="9"  height="18" rx="3" fill="#5C3317" transform="rotate(5 70 11)" />
-      <rect x="74" y="4"  width="8"  height="16" rx="3" fill="#5C3317" transform="rotate(15 78 12)" />
+        {/* Head — slightly narrower/taller */}
+        {row(3, 2, 10, fur)}
+        {row(2, 3, 12, fur)}
+        {row(1, 4, 14, fur)}
+        {row(1, 5, 14, fur)}
+        {row(1, 6, 14, fur)}
+        {row(2, 7, 12, fur)}
+        {row(3, 8, 10, fur)}  {/* overlaps body top */}
 
-      {/* Eyes — half-lidded */}
-      {isDead ? (
-        <>
-          <rect x="44" y="26" width="12" height="3" rx="1.5" fill="#3D2B3D" transform="rotate(45 50 27)" />
-          <rect x="44" y="26" width="12" height="3" rx="1.5" fill="#3D2B3D" transform="rotate(-45 50 27)" />
-          <rect x="64" y="26" width="12" height="3" rx="1.5" fill="#3D2B3D" transform="rotate(45 70 27)" />
-          <rect x="64" y="26" width="12" height="3" rx="1.5" fill="#3D2B3D" transform="rotate(-45 70 27)" />
-        </>
-      ) : mood === 'sleeping' ? (
-        <>
-          <rect x="43" y="30" width="14" height="4" rx="2" fill="#3D2B3D" />
-          <rect x="63" y="30" width="14" height="4" rx="2" fill="#3D2B3D" />
-        </>
-      ) : (
-        <>
-          {/* Full eye with top half-lid */}
-          <circle cx="50" cy="33" r="7" fill="#3D2B3D" />
-          <circle cx="70" cy="33" r="7" fill="#3D2B3D" />
-          <circle cx="52" cy="31" r="2.5" fill="white" />
-          <circle cx="72" cy="31" r="2.5" fill="white" />
-          {/* Lid overlay */}
-          <rect x="43" y="26" width="14" height="7" rx="1" fill={skinFill} opacity="0.65" />
-          <rect x="63" y="26" width="14" height="7" rx="1" fill={skinFill} opacity="0.65" />
-        </>
-      )}
+        {/* White muzzle patch */}
+        {row(5, 5, 6, belly)}
+        {row(5, 6, 6, belly)}
+        {row(5, 7, 5, belly)}
 
-      {/* Mouth */}
-      {mood === 'happy' && (
-        <>
-          <rect x="50" y="43" width="5" height="4" rx="2" fill="#D4607A" />
-          <rect x="55" y="46" width="10" height="4" rx="2" fill="#D4607A" />
-          <rect x="65" y="43" width="5" height="4" rx="2" fill="#D4607A" />
-        </>
-      )}
-      {(mood === 'neutral' || mood === 'sick') && (
-        <rect x="51" y="43" width="18" height="3" rx="1.5" fill="#D4607A" />
-      )}
-      {(mood === 'sad' || mood === 'dead') && (
-        <>
-          <rect x="50" y="46" width="5" height="4" rx="2" fill="#D4607A" />
-          <rect x="55" y="43" width="10" height="4" rx="2" fill="#D4607A" />
-          <rect x="65" y="46" width="5" height="4" rx="2" fill="#D4607A" />
-        </>
-      )}
-      {mood === 'sleeping' && (
-        <>
-          <rect x="51" y="43" width="18" height="3" rx="1.5" fill="#D4607A" />
-          <text x="84" y="18" fontFamily="Nunito, sans-serif" fontSize="11" fill="#C084FC" fontWeight="bold">z</text>
-          <text x="92" y="10" fontFamily="Nunito, sans-serif" fontSize="9"  fill="#C084FC" fontWeight="bold">z</text>
-        </>
-      )}
+        {/* 2 whiskers per side */}
+        <line x1={wx(1)} y1={wy(5,2)} x2={wx(-3)} y2={wy(5,0)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(1)} y1={wy(6,3)} x2={wx(-3)} y2={wy(6,4)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(13)} y1={wy(5,2)} x2={wx(17)} y2={wy(5,0)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(13)} y1={wy(6,3)} x2={wx(17)} y2={wy(6,4)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
 
-      {isDead && (
-        <circle cx="60" cy="5" r="13" stroke="#FFD700" strokeWidth="3" fill="none" opacity="0.8" />
-      )}
+        {/* Blush */}
+        <circle cx={wx(2)+2} cy={wy(6)+2} r="5" fill={C.blush} opacity="0.35" />
+        <circle cx={wx(13)+4} cy={wy(6)+2} r="5" fill={C.blush} opacity="0.35" />
+
+        {/* Nose */}
+        {row(7, 6, 2, C.nose)}
+
+        {/* Eyes */}
+        {isSleeping ? (
+          <>
+            {row(4, 5, 3, C.eye)}
+            {row(9, 5, 3, C.eye)}
+          </>
+        ) : isDead ? (
+          <>
+            {px(4,4,C.eye)}{px(6,4,C.eye)}{px(5,5,C.eye)}
+            {px(4,6,C.eye)}{px(6,6,C.eye)}
+            {px(9,4,C.eye)}{px(11,4,C.eye)}{px(10,5,C.eye)}
+            {px(9,6,C.eye)}{px(11,6,C.eye)}
+          </>
+        ) : (
+          <g className="cat-eye-group">
+            {row(4, 4, 3, C.eye)}
+            {row(4, 5, 3, C.eye)}
+            {px(4,4, C.pupilBlue)}
+            {px(6,4, C.eyeShine)}
+            {row(9, 4, 3, C.eye)}
+            {row(9, 5, 3, C.eye)}
+            {px(9,4, C.pupilBlue)}
+            {px(11,4,C.eyeShine)}
+            {isHappy && (
+              <>
+                {row(4, 5, 3, fur)}
+                {row(9, 5, 3, fur)}
+              </>
+            )}
+          </g>
+        )}
+
+        {/* Mouth */}
+        {isHappy && (
+          <>
+            {px(5,7,C.mouth)}
+            {row(6,8,4,C.mouth)}
+            {px(10,7,C.mouth)}
+          </>
+        )}
+        {isSad && (
+          <>
+            {px(5,8,C.mouth)}
+            {row(6,7,4,C.mouth)}
+            {px(10,8,C.mouth)}
+            {px(5,7,C.tear)}
+          </>
+        )}
+        {!isHappy && !isSad && !isSleeping && !isDead && row(6,7,4,C.mouth)}
+        {isSleeping && (
+          <>
+            {row(6,7,4,C.mouth)}
+            <text x={wx(14)} y={wy(3)} fontFamily="sans-serif" fontSize="10" fill={C.zzz} fontWeight="bold" className="cat-zzz-1">z</text>
+            <text x={wx(14)+4} y={wy(1)+2} fontFamily="sans-serif" fontSize="8" fill={C.zzz} fontWeight="bold" className="cat-zzz-2">z</text>
+            <text x={wx(15)} y={wy(0)} fontFamily="sans-serif" fontSize="6" fill={C.zzz} fontWeight="bold" className="cat-zzz-3">z</text>
+          </>
+        )}
+        {isDead && (
+          <>
+            {px(5,8,C.mouth)}{row(6,7,4,C.mouth)}{px(10,8,C.mouth)}
+            <circle cx="60" cy="4" r="12" stroke={C.halo} strokeWidth="3" fill="none" opacity="0.85" />
+          </>
+        )}
+        {isSick && <>{px(13,3,C.tear)}{px(13,4,C.tear)}</>}
+      </g>
     </svg>
   );
 }

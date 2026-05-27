@@ -130,9 +130,258 @@
   to   { transform: scaleY(1); opacity: 1; }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   CAT PIXEL-ART MICRO-ANIMATION KEYFRAMES
+   ══════════════════════════════════════════════════════════════ */
+
+/* Tail idle sway — reduced amplitude for softer feel */
+@keyframes cat-tail-sway {
+  0%, 100% { transform: rotate(-7deg); }
+  50%       { transform: rotate(7deg); }
+}
+
+/* Fast tail wag (happy/excited) */
+@keyframes cat-tail-wag {
+  0%, 100% { transform: rotate(-28deg); }
+  50%       { transform: rotate(28deg); }
+}
+
+/* Left ear twitch — softer peaks */
+@keyframes cat-ear-twitch-l {
+  0%, 84%, 100% { transform: rotate(0deg); }
+  87%           { transform: rotate(-6deg); }
+  92%           { transform: rotate(4deg); }
+  96%           { transform: rotate(-2deg); }
+}
+
+/* Right ear twitch (offset timing) — softer peaks */
+@keyframes cat-ear-twitch-r {
+  0%, 72%, 100% { transform: rotate(0deg); }
+  75%           { transform: rotate(6deg); }
+  80%           { transform: rotate(-4deg); }
+  85%           { transform: rotate(2deg); }
+}
+
+/* Body gentle breathing */
+@keyframes cat-breathe {
+  0%, 100% { transform: scaleY(1);    }
+  50%       { transform: scaleY(1.04); }
+}
+
+/* Eye blink (scaleY squish) */
+@keyframes cat-blink {
+  0%, 88%, 100% { transform: scaleY(1);    }
+  92%, 96%      { transform: scaleY(0.08); }
+}
+
+/* ZZZ float animations */
+@keyframes cat-zzz-float-1 {
+  0%   { transform: translate(0,0) scale(1);    opacity: 1; }
+  100% { transform: translate(6px,-22px) scale(0.5); opacity: 0; }
+}
+@keyframes cat-zzz-float-2 {
+  0%   { transform: translate(0,0) scale(1);    opacity: 0.8; }
+  100% { transform: translate(10px,-28px) scale(0.4); opacity: 0; }
+}
+@keyframes cat-zzz-float-3 {
+  0%   { transform: translate(0,0) scale(1);    opacity: 0.6; }
+  100% { transform: translate(14px,-34px) scale(0.3); opacity: 0; }
+}
+
+/* ── Action-triggered keyframes ── */
+
+/* FEED — head bobs down to eat */
+@keyframes cat-eat-head {
+  0%   { transform: translateY(0)    rotate(0deg);  }
+  25%  { transform: translateY(9px)  rotate(-6deg); }
+  50%  { transform: translateY(3px)  rotate(0deg);  }
+  75%  { transform: translateY(10px) rotate(-5deg); }
+  100% { transform: translateY(0)    rotate(0deg);  }
+}
+
+/* PLAY — pounce jump */
+@keyframes cat-play-jump {
+  0%   { transform: translateY(0)     scaleX(1);    }
+  20%  { transform: translateY(-20px) scaleX(0.88); }
+  40%  { transform: translateY(-8px)  scaleX(1.06); }
+  60%  { transform: translateY(-16px) scaleX(0.92); }
+  80%  { transform: translateY(-4px)  scaleX(1.03); }
+  100% { transform: translateY(0)     scaleX(1);    }
+}
+
+/* CLEAN — head tilts to groom */
+@keyframes cat-groom-head {
+  0%   { transform: rotate(0deg);   }
+  25%  { transform: rotate(-20deg); }
+  50%  { transform: rotate(-5deg);  }
+  70%  { transform: rotate(-15deg); }
+  85%  { transform: rotate(-3deg);  }
+  100% { transform: rotate(0deg);   }
+}
+
+/* WAKE — stretch */
+@keyframes cat-stretch {
+  0%   { transform: scaleX(1)    scaleY(1);    }
+  20%  { transform: scaleX(1.18) scaleY(0.86); }
+  45%  { transform: scaleX(0.94) scaleY(1.12); }
+  70%  { transform: scaleX(1.10) scaleY(0.93); }
+  90%  { transform: scaleX(0.98) scaleY(1.02); }
+  100% { transform: scaleX(1)    scaleY(1);    }
+}
+
+/* PRAISE — happy bounce with slight spin */
+@keyframes cat-praise-bounce {
+  0%   { transform: translateY(0)     rotate(0deg);  }
+  22%  { transform: translateY(-18px) rotate(9deg);  }
+  45%  { transform: translateY(-6px)  rotate(-5deg); }
+  68%  { transform: translateY(-14px) rotate(7deg);  }
+  88%  { transform: translateY(-3px)  rotate(-2deg); }
+  100% { transform: translateY(0)     rotate(0deg);  }
+}
+
+/* MEDICINE — swallowing nod */
+@keyframes cat-medicine-head {
+  0%   { transform: translateY(0)   rotate(0deg);  }
+  30%  { transform: translateY(7px) rotate(4deg);  }
+  55%  { transform: translateY(-4px) rotate(-2deg); }
+  75%  { transform: translateY(5px) rotate(3deg);  }
+  100% { transform: translateY(0)   rotate(0deg);  }
+}
+
+/* ── Organic idle sway (replaces float) ── */
+@keyframes cat-idle-sway {
+  0%   { transform: translateY(0px)   rotate(0deg);    }
+  25%  { transform: translateY(-5px)  rotate(-0.5deg); }
+  50%  { transform: translateY(-7px)  rotate(0deg);    }
+  75%  { transform: translateY(-5px)  rotate(0.5deg);  }
+  100% { transform: translateY(0px)   rotate(0deg);    }
+}
+
+/* ── Walking body-bob ── */
+@keyframes cat-walk-anim {
+  0%,100% { transform: translateY(0px);   }
+  20%     { transform: translateY(-4px);  }
+  40%     { transform: translateY(-1px);  }
+  60%     { transform: translateY(-3px);  }
+  80%     { transform: translateY(-1px);  }
+}
+
+/* Overlay fade-in/out */
+@keyframes overlay-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  40%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1);   opacity: 0; }
+}
+
+/* Heart float (praise overlay) */
+@keyframes heart-float {
+  0%   { transform: translateY(0)     scale(1);   opacity: 1; }
+  100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+/* Star bounce (play overlay) */
+@keyframes star-bounce {
+  0%, 100% { transform: translateY(0)     scale(1);    opacity: 1; }
+  50%       { transform: translateY(-16px) scale(1.15); opacity: 0.85; }
+}
+
+/* Fish bowl bob (eat overlay) */
+@keyframes bowl-bob {
+  0%, 100% { transform: translateY(0);   opacity: 1; }
+  50%       { transform: translateY(-4px); opacity: 0.9; }
+}
+
+/* Bubble float (groom overlay) */
+@keyframes bubble-float {
+  0%   { transform: translateY(0)     scale(1);    opacity: 0.9; }
+  100% { transform: translateY(-36px) scale(0.4);  opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CAT SUB-ELEMENT ALWAYS-ON ANIMATIONS
+   Applied via className on SVG <g> groups inside each sprite
+   ══════════════════════════════════════════════════════════════ */
+
+.cat-tail {
+  transform-box:    fill-box;
+  transform-origin: 50% 0%;
+  animation: cat-tail-sway 1.9s ease-in-out infinite;
+}
+
+.cat-ear-l {
+  transform-box:    fill-box;
+  transform-origin: 100% 100%;
+  animation: cat-ear-twitch-l 6.5s ease-in-out infinite;
+}
+
+.cat-ear-r {
+  transform-box:    fill-box;
+  transform-origin: 0% 100%;
+  animation: cat-ear-twitch-r 6.5s ease-in-out infinite;
+  animation-delay: 1.8s;
+}
+
+.cat-body {
+  transform-box:    fill-box;
+  transform-origin: 50% 100%;
+  animation: cat-breathe 2.6s ease-in-out infinite;
+}
+
+.cat-eye-group {
+  transform-box:    fill-box;
+  transform-origin: 50% 50%;
+  animation: cat-blink 4.8s ease-in-out infinite;
+}
+
+/* ZZZ floaters */
+.cat-zzz-1 { animation: cat-zzz-float-1 1.4s ease-out infinite; }
+.cat-zzz-2 { animation: cat-zzz-float-2 1.4s ease-out infinite; animation-delay: 0.45s; }
+.cat-zzz-3 { animation: cat-zzz-float-3 1.4s ease-out infinite; animation-delay: 0.9s; }
+
+/* ── Mood overrides on sub-elements ── */
+
+/* Sleeping: tail pulse (no sway), ears still */
+.anim-sleeping .cat-tail { animation: pulse-soft 4s ease-in-out infinite; }
+.anim-sleeping .cat-ear-l,
+.anim-sleeping .cat-ear-r { animation: none; }
+.anim-sleeping .cat-eye-group { animation: none; }
+
+/* Sick: tail wobbles in sync with body */
+.anim-sick .cat-tail { animation: wiggle 0.8s ease-in-out infinite; }
+
+/* Happy idle: fast tail wag via .mood-happy helper class */
+.mood-happy .cat-tail { animation: cat-tail-wag 0.38s ease-in-out infinite; }
+
+/* ── Action animation overrides ── */
+
+/* EATING: head bobs, tail wags with excitement */
+.anim-eating .cat-head { animation: cat-eat-head 0.55s ease-in-out 3 forwards; }
+.anim-eating .cat-tail { animation: cat-tail-wag 0.38s ease-in-out infinite; }
+
+/* PLAYING: whole sprite jumps, tail wags fast */
+.anim-playing            { animation: cat-play-jump 0.6s cubic-bezier(0.34,1.56,0.64,1) 3 forwards; }
+.anim-playing .cat-tail  { animation: cat-tail-wag 0.22s ease-in-out infinite; }
+
+/* GROOMING: head tilts, ears perk up (cancel twitch during groom) */
+.anim-grooming .cat-head { animation: cat-groom-head 2s ease-in-out 1 forwards; }
+.anim-grooming .cat-ear-l { animation: none; transform: rotate(-5deg); }
+.anim-grooming .cat-ear-r { animation: none; transform: rotate(5deg); }
+.anim-grooming .cat-tail  { animation: cat-tail-sway 2.5s ease-in-out infinite; }
+
+/* WAKING: whole sprite stretches */
+.anim-stretching { animation: cat-stretch 1.6s ease-out 1 forwards; }
+
+/* PRAISE: bounce with spin, fast tail */
+.anim-praising            { animation: cat-praise-bounce 0.55s cubic-bezier(0.34,1.56,0.64,1) 3 forwards; }
+.anim-praising .cat-tail  { animation: cat-tail-wag 0.2s ease-in-out infinite; }
+
+/* MEDICINE: head nods */
+.anim-medicine .cat-head { animation: cat-medicine-head 0.85s ease-in-out 2 forwards; }
+
 /* ── Utility Classes ── */
 
-.anim-idle      { animation: float        3s ease-in-out infinite; }
+.anim-idle      { animation: cat-idle-sway 3.5s ease-in-out infinite; }
+.anim-walking   { animation: cat-walk-anim 0.48s ease-in-out infinite !important; }
 .anim-sleeping  { animation: pulse-soft   4s ease-in-out infinite; }
 .anim-sick      { animation: wiggle       0.6s ease-in-out infinite; }
 .anim-happy     { animation: bounce-small 0.5s ease-in-out 3; }

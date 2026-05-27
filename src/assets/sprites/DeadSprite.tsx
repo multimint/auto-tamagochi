@@ -1,60 +1,125 @@
+import type { PetMood } from '@/types';
+import { P, OX, OY, PALETTES, C, px, row } from './catPixelUtils';
+
 interface SpriteProps {
   className?: string;
   style?: React.CSSProperties;
+  mood?: PetMood;
 }
 
+/**
+ * Dead cat — grayscale, X eyes, golden halo, slightly slumped pose.
+ */
 export function DeadSprite({ className, style }: SpriteProps) {
+  const { fur, furDk, belly, earInner, stripe } = PALETTES.dead;
+
+  const wx = (col: number) => OX + col * P;
+  const wy = (r: number, off = 0) => OY + r * P + off;
+
   return (
     <svg
       viewBox="0 0 120 120"
       xmlns="http://www.w3.org/2000/svg"
+      shapeRendering="crispEdges"
       className={className}
-      style={{ ...style, filter: 'grayscale(1) brightness(0.65)', opacity: 0.75 }}
+      style={{ ...style, filter: 'grayscale(1) brightness(0.75)' }}
       role="img"
-      aria-label="Deceased pet"
+      aria-label="Cat has passed away"
     >
       {/* Halo */}
-      <circle cx="60" cy="8" r="15" stroke="#FFD700" strokeWidth="3" fill="none" opacity="0.85" />
+      <circle cx="60" cy="5" r="13" stroke={C.halo} strokeWidth="3" fill="none"
+        style={{ filter: 'none', animation: 'halo-glow 2s ease-in-out infinite' }} />
 
       {/* Shadow */}
-      <ellipse cx="63" cy="117" rx="22" ry="4" fill="#888" opacity="0.2" />
+      <ellipse cx="60" cy="113" rx="26" ry="5" fill={C.shadow} />
 
-      {/* Shoes */}
-      <rect x="28" y="107" width="24" height="9" rx="4" fill="#555" />
-      <rect x="68" y="107" width="24" height="9" rx="4" fill="#555" />
+      {/* Tail — limp, drooping */}
+      <g className="cat-tail">
+        {row(12, 10, 2, fur)}
+        {row(11, 11, 3, furDk)}
+        {row(10, 12, 3, fur)}
+        {row(9,  13, 3, furDk)}
+        {row(8,  14, 3, fur)}
+      </g>
 
-      {/* Legs */}
-      <rect x="32" y="80" width="18" height="32" rx="7" fill="#C8C8C8" stroke="#999" strokeWidth="1.5" />
-      <rect x="70" y="80" width="18" height="32" rx="7" fill="#C8C8C8" stroke="#999" strokeWidth="1.5" />
+      {/* Body */}
+      <g className="cat-body">
+        {row(3, 9,  10, fur)}
+        {row(2,10,  12, fur)}
+        {row(2,11,  12, fur)}
+        {row(2,12,  12, fur)}
+        {row(3,13,  10, fur)}
 
-      {/* Body (tilted) */}
-      <rect x="28" y="50" width="64" height="52" rx="14" fill="#BBBBBB" stroke="#999" strokeWidth="2.5" transform="rotate(-6 60 76)" />
+        {/* belly */}
+        {row(5,10, 6, belly)}
+        {row(5,11, 6, belly)}
+        {row(5,12, 6, belly)}
 
-      {/* Arms */}
-      <rect x="10" y="60" width="22" height="13" rx="6" fill="#C8C8C8" stroke="#999" strokeWidth="1.5" transform="rotate(8 21 66)" />
-      <rect x="88" y="60" width="22" height="13" rx="6" fill="#C8C8C8" stroke="#999" strokeWidth="1.5" transform="rotate(-8 99 66)" />
+        {/* stripes */}
+        {row(3,10, 2, stripe)}
+        {px(12,10, stripe)}
+        {row(3,12, 2, stripe)}
+        {px(12,12, stripe)}
+      </g>
 
-      {/* Head (tilted) */}
-      <circle cx="60" cy="30" r="27" fill="#D0D0D0" stroke="#999" strokeWidth="2.5" />
+      {/* Paws — slightly splayed */}
+      <g className="cat-paws">
+        {row(2,14, 3, belly)}
+        {row(9,14, 4, belly)}
+        {px(3,14, furDk)}
+        {px(10,14,furDk)}
+      </g>
 
-      {/* Hair */}
-      <rect x="33" y="6" width="54" height="14" rx="10" fill="#AAAAAA" />
+      {/* Head */}
+      <g className="cat-head">
 
-      {/* X eyes */}
-      <rect x="42" y="26" width="14" height="3.5" rx="1.5" fill="#555" transform="rotate(45 49 27.75)" />
-      <rect x="42" y="26" width="14" height="3.5" rx="1.5" fill="#555" transform="rotate(-45 49 27.75)" />
-      <rect x="64" y="26" width="14" height="3.5" rx="1.5" fill="#555" transform="rotate(45 71 27.75)" />
-      <rect x="64" y="26" width="14" height="3.5" rx="1.5" fill="#555" transform="rotate(-45 71 27.75)" />
+        {/* Ears — drooping */}
+        <g className="cat-ear-l">
+          {px(3, 0, fur)}
+          {row(2, 1, 3, fur)}
+          {row(1, 2, 4, fur)}
+          {px(3, 1, earInner)}
+          {row(3, 2, 2, earInner)}
+        </g>
+        <g className="cat-ear-r">
+          {px(12,0, fur)}
+          {row(11,1, 3, fur)}
+          {row(11,2, 4, fur)}
+          {px(12,1, earInner)}
+          {row(11,2, 2, earInner)}
+        </g>
 
-      {/* Frown */}
-      <rect x="50" y="46" width="5" height="4" rx="2" fill="#888" />
-      <rect x="55" y="43" width="10" height="4" rx="2" fill="#888" />
-      <rect x="65" y="46" width="5" height="4" rx="2" fill="#888" />
+        {/* Head fill */}
+        {row(3, 2, 10, fur)}
+        {row(2, 3, 12, fur)}
+        {row(1, 4, 14, fur)}
+        {row(1, 5, 14, fur)}
+        {row(1, 6, 14, fur)}
+        {row(1, 7, 14, fur)}
+        {row(2, 8, 12, fur)}
 
-      {/* Floating ghost sparkles */}
-      <rect x="18" y="30" width="6" height="6" rx="1" fill="#DDD" opacity="0.5" transform="rotate(45 21 33)" />
-      <rect x="94" y="42" width="5" height="5" rx="1" fill="#DDD" opacity="0.5" transform="rotate(45 96 44)" />
-      <rect x="82" y="18" width="5" height="5" rx="1" fill="#DDD" opacity="0.4" transform="rotate(45 84 20)" />
+        {/* Whiskers */}
+        <line x1={wx(1)} y1={wy(5,3)} x2={wx(-3)} y2={wy(5,1)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(1)} y1={wy(6,3)} x2={wx(-3)} y2={wy(6,3)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(1)} y1={wy(7,2)} x2={wx(-3)} y2={wy(7,5)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(13)} y1={wy(5,3)} x2={wx(17)} y2={wy(5,1)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(13)} y1={wy(6,3)} x2={wx(17)} y2={wy(6,3)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+        <line x1={wx(13)} y1={wy(7,2)} x2={wx(17)} y2={wy(7,5)} stroke={C.whisker} strokeWidth="1.5" strokeLinecap="round" />
+
+        {/* Nose */}
+        {row(7, 6, 2, C.nose)}
+
+        {/* X Eyes */}
+        {/* left X */}
+        {px(4,4,C.eye)}{px(6,4,C.eye)}{px(5,5,C.eye)}{px(4,6,C.eye)}{px(6,6,C.eye)}
+        {/* right X */}
+        {px(9,4,C.eye)}{px(11,4,C.eye)}{px(10,5,C.eye)}{px(9,6,C.eye)}{px(11,6,C.eye)}
+
+        {/* Sad mouth */}
+        {px(5,8,C.mouth)}
+        {row(6,7,4,C.mouth)}
+        {px(10,8,C.mouth)}
+      </g>
     </svg>
   );
 }

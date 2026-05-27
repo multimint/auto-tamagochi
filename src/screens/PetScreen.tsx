@@ -39,6 +39,20 @@ export function PetScreen() {
   const cooldowns   = useCooldowns();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // ── Sprite action animation ─────────────────────────────────
+  const [activeAnimation, setActiveAnimation] = useState<string | null>(null);
+  const animTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const triggerSprite = useCallback((key: string, ms = 2000) => {
+    clearTimeout(animTimerRef.current);
+    setActiveAnimation(key);
+    animTimerRef.current = setTimeout(() => setActiveAnimation(null), ms);
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => () => clearTimeout(animTimerRef.current), []);
+  // ────────────────────────────────────────────────────────────
+
   const mood = computeMood(pet);
 
   // Track alerted thresholds to avoid repeating every render
@@ -100,6 +114,7 @@ export function PetScreen() {
       if (pet.isSleeping)     { addToast("Zzz… Let me sleep! 😴", 'warning'); return; }
       if (pet.hunger >= 90)   { addToast("I'm not hungry yet! 😌", 'info'); return; }
       dispatch({ type: 'FEED' });
+      triggerSprite('eating', 1800);
       addToast("Yum! 🍎", 'success');
       cooldowns.FEED.trigger();
       if (settings.soundEnabled) playEatSound();
@@ -111,6 +126,7 @@ export function PetScreen() {
       if (pet.isSleeping)    { addToast("Zzz… Let me sleep! 😴", 'warning'); return; }
       if (pet.energy < 15)   { addToast("Too tired to play! 😴", 'warning'); return; }
       dispatch({ type: 'PLAY' });
+      triggerSprite('playing', 2000);
       addToast("That was fun! ⭐", 'success');
       cooldowns.PLAY.trigger();
       if (settings.soundEnabled) playPlaySound();
@@ -120,6 +136,7 @@ export function PetScreen() {
       }
     } else if (actionType === 'CLEAN') {
       dispatch({ type: 'CLEAN' });
+      triggerSprite('grooming', 2500);
       addToast("All clean! 🫧", 'success');
       cooldowns.CLEAN.trigger();
       if (settings.soundEnabled) playCleanSound();
@@ -133,6 +150,7 @@ export function PetScreen() {
       if (settings.soundEnabled) playSleepSound();
     } else if (actionType === 'WAKE') {
       dispatch({ type: 'WAKE' });
+      triggerSprite('stretching', 1600);
       addToast("Good morning! ☀️", 'success');
       if (settings.soundEnabled) playWakeSound();
     } else if (actionType === 'MEDICINE') {
@@ -141,6 +159,7 @@ export function PetScreen() {
         return;
       }
       dispatch({ type: 'MEDICINE' });
+      triggerSprite('medicine', 1700);
       addToast("Feeling better! 💊", 'success');
       cooldowns.MEDICINE.trigger();
       if (settings.soundEnabled) playMedicineSound();
@@ -151,12 +170,13 @@ export function PetScreen() {
     } else if (actionType === 'PRAISE') {
       if (pet.isSleeping) { addToast("Shh, pet is sleeping! 😴", 'info'); return; }
       dispatch({ type: 'PRAISE' });
+      triggerSprite('praising', 1800);
       addToast("Thanks! I feel special! ⭐", 'success');
       cooldowns.PRAISE.trigger();
       if (settings.soundEnabled) playPraiseSound();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pet, achievements, settings.soundEnabled, cooldowns, dispatch, addToast]);
+  }, [pet, achievements, settings.soundEnabled, cooldowns, dispatch, addToast, triggerSprite]);
 
   const evoProgress = evolutionProgress(pet);
   const nextAge     = nextEvolutionAge(pet);
@@ -244,29 +264,46 @@ export function PetScreen() {
       {/* Pet body */}
       <div className="pet-screen-body">
 
-        {/* Avatar section */}
-        <section
-          className="avatar-section"
-          style={{ background: 'var(--color-bg-alt)', padding: 'var(--space-5) var(--space-4) var(--space-3)' }}
-        >
+        {/* Avatar section — cat roams freely inside */}
+        <section className="avatar-section">
+
+          {/* Status banners float above the walking cat */}
           {pet.isSleeping && (
             <div style={{
-              fontFamily: 'var(--font-body)',
-              fontSize:   'var(--font-size-sm)',
-              color:      'var(--color-text-muted)',
-              fontWeight: 'var(--font-weight-bold)',
-              marginBottom: 'var(--space-2)',
+              position:  'absolute',
+              top:       'var(--space-2)',
+              left:      '50%',
+              transform: 'translateX(-50%)',
+              zIndex:    3,
+              fontFamily:   'var(--font-body)',
+              fontSize:     'var(--font-size-sm)',
+              color:        'var(--color-text-muted)',
+              fontWeight:   'var(--font-weight-bold)',
+              background:   'var(--color-surface)',
+              borderRadius: 'var(--radius-full)',
+              padding:      '2px var(--space-3)',
+              boxShadow:    'var(--shadow-sm)',
+              whiteSpace:   'nowrap',
             }}>
-              💤 Sleeping — energy restoring…
+              💤 Sleeping…
             </div>
           )}
           {pet.isSick && (
             <div style={{
-              fontFamily: 'var(--font-body)',
-              fontSize:   'var(--font-size-sm)',
-              color:      'var(--color-danger)',
-              fontWeight: 'var(--font-weight-bold)',
-              marginBottom: 'var(--space-2)',
+              position:  'absolute',
+              top:       'var(--space-2)',
+              left:      '50%',
+              transform: 'translateX(-50%)',
+              zIndex:    3,
+              fontFamily:   'var(--font-body)',
+              fontSize:     'var(--font-size-sm)',
+              color:        'var(--color-danger)',
+              fontWeight:   'var(--font-weight-bold)',
+              background:   'var(--color-surface)',
+              borderRadius: 'var(--radius-full)',
+              padding:      '2px var(--space-3)',
+              boxShadow:    'var(--shadow-sm)',
+              whiteSpace:   'nowrap',
             }}>
               🤒 Sick! Use medicine!
             </div>
@@ -279,6 +316,7 @@ export function PetScreen() {
             pendingEvolution={!!state.runtime.pendingEvolutionStage}
             onEvolutionEnd={() => dispatch({ type: 'CLEAR_PENDING_EVOLUTION' })}
             petName={pet.name}
+            activeAnimation={activeAnimation}
           />
         </section>
 
