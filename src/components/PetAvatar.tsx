@@ -22,6 +22,12 @@ interface PetAvatarProps {
   speechMessageKey?: number;
   /** Called when player clicks / taps the pet sprite */
   onPetClick?:       () => void;
+  /** Whether the player is in "cleaning mode" (blush cursor active) */
+  isCleaningMode?:   boolean;
+  /** Called when the pet is clicked in cleaning mode — executes the clean */
+  onCleanClick?:     () => void;
+  /** Called when the room background is clicked in cleaning mode — cancels mode */
+  onCancelClean?:    () => void;
 }
 
 /** A floating heart / sparkle that pops on click */
@@ -343,7 +349,8 @@ const IDLE_MAX_MS           = 3800;
 
 /* ── Main component ── */
 
-const CLICK_EMOJIS = ['♥', '⭐', '✨', '💕', '♥', '🌟', '💖'];
+const CLICK_EMOJIS  = ['♥', '⭐', '✨', '💕', '♥', '🌟', '💖'];
+const CLEAN_EMOJIS  = ['🫧', '✨', '💦', '🫧', '✨', '🫧'];
 
 export function PetAvatar({
   stage,
@@ -355,6 +362,9 @@ export function PetAvatar({
   speechMessage,
   speechMessageKey,
   onPetClick,
+  isCleaningMode,
+  onCleanClick,
+  onCancelClean,
 }: PetAvatarProps) {
   const Sprite     = SPRITE_MAP[stage] ?? BabySprite;
   const baseClass  = getAnimClass(mood, pendingEvolution, activeAnimation);
@@ -369,34 +379,40 @@ export function PetAvatar({
   const [isPetting, setIsPetting] = useState(false);
   const petBounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const handleWrapperClick = useCallback(() => {
+  const handleWrapperClick = useCallback((e: React.MouseEvent) => {
     if (isDead) return;
+    e.stopPropagation(); // prevent room-background cancel when clicking the pet
 
-    // Notify parent (dialog + stat boost logic lives there)
-    onPetClick?.();
+    const isCleaning = isCleaningMode && !!onCleanClick;
+    const emojis     = isCleaning ? CLEAN_EMOJIS : CLICK_EMOJIS;
 
-    // Spawn 3–5 heart/emoji particles at random positions in the upper body area
+    // Fire the right callback
+    if (isCleaning) {
+      onCleanClick!();
+    } else {
+      onPetClick?.();
+    }
+
+    // Spawn 3–5 particles (bubbles when cleaning, hearts when petting)
     const count = 3 + Math.floor(Math.random() * 3);
     const newParticles: ClickParticle[] = Array.from({ length: count }, (_, i) => ({
       id:    ++particleIdRef.current,
-      x:     15 + Math.random() * 70,   // 15–85% horizontal spread
-      y:     10 + Math.random() * 55,   // 10–65% — head/body region
-      emoji: CLICK_EMOJIS[Math.floor(Math.random() * CLICK_EMOJIS.length)],
+      x:     15 + Math.random() * 70,
+      y:     10 + Math.random() * 55,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
       delay: i * 0.07,
     }));
     setClickParticles(prev => [...prev, ...newParticles]);
 
-    // Remove particles after animation (~900 ms + max delay)
     setTimeout(() => {
       const ids = new Set(newParticles.map(p => p.id));
       setClickParticles(prev => prev.filter(p => !ids.has(p.id)));
     }, 950);
 
-    // Trigger brief bounce animation on the wrapper
     clearTimeout(petBounceTimer.current);
     setIsPetting(true);
     petBounceTimer.current = setTimeout(() => setIsPetting(false), 420);
-  }, [isDead, onPetClick]);
+  }, [isDead, isCleaningMode, onCleanClick, onPetClick]);
 
   useEffect(() => () => clearTimeout(petBounceTimer.current), []);
 
@@ -443,8 +459,8 @@ export function PetAvatar({
       setWalkPos(SLEEP_POS);
       return;
     }
-    if (activeAnimation) {
-      // pause movement during action (cat freezes in place)
+    if (activeAnimation || isCleaningMode) {
+      // pause movement during action or cleaning mode (cat stays put)
       clearTimeout(walkTimer.current);
       setIsWalking(false);
       return;
@@ -453,7 +469,7 @@ export function PetAvatar({
     scheduleWalk();
     return () => clearTimeout(walkTimer.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDead, isSleeping, activeAnimation]);
+  }, [isDead, isSleeping, activeAnimation, isCleaningMode]);
 
   /* ── Depth scale from y position ── */
   // y=18 (back) → 0.68   y=80 (front) → 1.08
@@ -489,6 +505,8 @@ export function PetAvatar({
       className="cat-walk-stage"
       role="img"
       aria-label={ariaLabel}
+      style={isCleaningMode ? { cursor: 'none' } : undefined}
+      onClick={isCleaningMode ? onCancelClean : undefined}
     >
       {/* Room background — renders behind the cat */}
       <RoomBackground />
@@ -510,7 +528,10 @@ export function PetAvatar({
           transition:      isWalking
             ? `left ${WALK_MS}ms linear, top ${WALK_MS}ms linear`
             : 'left 0.4s ease-out, top 0.4s ease-out',
-          cursor:          isDead ? 'default' : 'pointer',
+          cursor:          isCleaningMode ? 'none' : (isDead ? 'default' : 'pointer'),
+          filter:          isCleaningMode
+            ? 'drop-shadow(0 0 10px rgba(126,200,227,0.85)) drop-shadow(0 0 4px rgba(255,255,255,0.5))'
+            : undefined,
           /* width / height come from .pet-avatar-wrapper in CSS */
         }}
       >

@@ -436,3 +436,9 @@
 .anim-fade-out  { animation: fade-out     300ms ease forwards; }
 .anim-modal-in  { animation: modal-in     250ms cubic-bezier(0.34,1.56,0.64,1); }
 .anim-petting   { animation: cat-pet-bounce 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+/* Blush cursor gentle wobble (cleaning mode) */
+@keyframes blush-cursor-bob {
+  0%, 100% { transform: rotate(-8deg) scale(1);    }
+  50%       { transform: rotate(8deg)  scale(1.08); }
+}

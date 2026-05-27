@@ -155,6 +155,34 @@ function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/* ── Blush-puff cursor SVG (shown in cleaning mode) ── */
+function BlushPuffCursor() {
+  return (
+    <svg width="44" height="50" viewBox="0 0 44 50" xmlns="http://www.w3.org/2000/svg" shapeRendering="crispEdges">
+      {/* Outer soft glow ring */}
+      <circle cx="22" cy="19" r="16" fill="#FFD6EC" opacity="0.45"/>
+      {/* Main puff body */}
+      <circle cx="22" cy="19" r="13" fill="#FFB3D0"/>
+      <circle cx="22" cy="19" r="10" fill="#FF9ABF"/>
+      {/* Fluffy highlight blobs */}
+      <circle cx="15" cy="13" r="5"   fill="#FFE8F4" opacity="0.75"/>
+      <circle cx="26" cy="12" r="4"   fill="#FFE8F4" opacity="0.60"/>
+      <circle cx="18" cy="24" r="3.5" fill="#FFE8F4" opacity="0.45"/>
+      {/* Handle */}
+      <rect x="19" y="31" width="7" height="15" rx="3.5" fill="#D4A0B8"/>
+      <rect x="20" y="31" width="5" height="5"  rx="1"   fill="#E8C0D4" opacity="0.6"/>
+      {/* Cross sparkle — top right */}
+      <rect x="33" y="5"  width="2" height="8"  rx="1" fill="#FF6B9D" opacity="0.85"/>
+      <rect x="30" y="8"  width="8" height="2"  rx="1" fill="#FF6B9D" opacity="0.85"/>
+      {/* Cross sparkle — top left */}
+      <rect x="5"  y="10" width="1.5" height="6" rx="0.75" fill="#FFB3D0" opacity="0.7"/>
+      <rect x="2.5" y="12.5" width="6" height="1.5" rx="0.75" fill="#FFB3D0" opacity="0.7"/>
+      {/* Dot accent */}
+      <circle cx="36" cy="14" r="2" fill="#FF9ABF" opacity="0.6"/>
+    </svg>
+  );
+}
+
 export function PetScreen() {
   const { state, dispatch, pet, settings, achievements } = useGame();
   const navigate    = useNavigate();
@@ -162,7 +190,9 @@ export function PetScreen() {
   const cooldowns   = useCooldowns();
   const [menuOpen, setMenuOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const [statExpanded, setStatExpanded] = useState(true);
+  const [statExpanded,   setStatExpanded]   = useState(true);
+  const [isCleaningMode, setIsCleaningMode] = useState(false);
+  const blushCursorRef = useRef<HTMLDivElement>(null);
 
   // ── Pet speech bubble ────────────────────────────────────────
   const [petSpeech,    setPetSpeech]    = useState<string | null>(null);
@@ -216,6 +246,37 @@ export function PetScreen() {
 
   // Clean up on unmount
   useEffect(() => () => clearTimeout(animTimerRef.current), []);
+  // ────────────────────────────────────────────────────────────
+
+  // ── Cleaning-mode helpers ────────────────────────────────────
+  /** Track mouse position and move the floating blush cursor. */
+  useEffect(() => {
+    if (!isCleaningMode) return;
+    const onMove = (e: MouseEvent) => {
+      if (blushCursorRef.current) {
+        blushCursorRef.current.style.left = `${e.clientX}px`;
+        blushCursorRef.current.style.top  = `${e.clientY}px`;
+      }
+    };
+    document.addEventListener('mousemove', onMove);
+    return () => document.removeEventListener('mousemove', onMove);
+  }, [isCleaningMode]);
+
+  /** Escape key cancels cleaning mode. */
+  useEffect(() => {
+    if (!isCleaningMode) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsCleaningMode(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [isCleaningMode]);
+
+  /** Auto-cancel if the pet falls asleep or dies while blush is active. */
+  useEffect(() => {
+    if (isCleaningMode && (pet.isSleeping || pet.stage === 'dead')) {
+      setIsCleaningMode(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet.isSleeping, pet.stage]);
   // ────────────────────────────────────────────────────────────
 
   const mood = computeMood(pet);
@@ -346,11 +407,26 @@ export function PetScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet, achievements, settings.soundEnabled, cooldowns, dispatch, addToast, petSay, triggerSprite]);
 
+  /** Executes the clean action after the player clicks the pet in cleaning mode. */
+  const handleCleanPet = useCallback(() => {
+    setIsCleaningMode(false);
+    dispatch({ type: 'CLEAN' });
+    triggerSprite('grooming', 2500);
+    petSay(pickRandom(ACTION_DIALOGS.clean));
+    cooldowns.CLEAN.trigger();
+    if (settings.soundEnabled) playCleanSound();
+    if (!achievements.includes('first_clean')) {
+      dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_clean' } });
+      addToast('Achievement: First Clean! 🧹', 'success');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, triggerSprite, petSay, cooldowns, settings.soundEnabled, achievements, addToast]);
+
   const evoProgress = evolutionProgress(pet);
   const nextAge     = nextEvolutionAge(pet);
 
   return (
-    <div className="screen" style={{ background: 'var(--color-surface)' }}>
+    <div className="screen" style={{ background: 'var(--color-surface)', cursor: isCleaningMode ? 'none' : undefined }}>
       {/* Top bar */}
       <header className="top-bar">
         <StageBadge stage={pet.stage} />
@@ -439,6 +515,30 @@ export function PetScreen() {
           {pet.isSleeping && <div className="status-banner">💤 Sleeping…</div>}
           {pet.isSick     && <div className="status-banner status-banner--sick">🤒 Sick! Use medicine!</div>}
 
+          {/* Cleaning-mode hint */}
+          {isCleaningMode && (
+            <div style={{
+              position:      'absolute',
+              top:           8,
+              left:          '50%',
+              transform:     'translateX(-50%)',
+              background:    'rgba(126,200,227,0.93)',
+              color:         '#0d2d3a',
+              padding:       '4px 14px',
+              borderRadius:  20,
+              fontSize:      '0.68rem',
+              fontWeight:    700,
+              zIndex:        20,
+              pointerEvents: 'none',
+              whiteSpace:    'nowrap',
+              boxShadow:     '0 2px 8px rgba(126,200,227,0.4)',
+              fontFamily:    'var(--font-body)',
+              animation:     'fade-in 0.2s ease-out',
+            }}>
+              🫧 Click your pet to clean!
+            </div>
+          )}
+
           <PetAvatar
             stage={pet.stage}
             variant={pet.avatarVariant}
@@ -450,6 +550,9 @@ export function PetScreen() {
             speechMessage={petSpeech}
             speechMessageKey={petSpeechKey}
             onPetClick={handlePetClick}
+            isCleaningMode={isCleaningMode}
+            onCleanClick={handleCleanPet}
+            onCancelClean={() => setIsCleaningMode(false)}
           />
         </section>
 
@@ -509,14 +612,21 @@ export function PetScreen() {
             accent="rgba(120,216,152,0.28)"
           />
           <ActionButton
-            label="Clean"
+            label={isCleaningMode ? 'Cancel ✕' : 'Clean'}
             icon={<CleanIcon size={24} />}
-            onClick={() => handleAction('CLEAN')}
+            onClick={() => {
+              if (isCleaningMode) { setIsCleaningMode(false); return; }
+              resumeAudio();
+              if (pet.isSleeping) { petSay(pickRandom(ACTION_DIALOGS.sleeping)); return; }
+              if (pet.stage === 'dead') return;
+              setIsCleaningMode(true);
+              petSay('Ready for a bath! 🛁', 2_000);
+            }}
             isOnCooldown={cooldowns.CLEAN.isOnCooldown}
             cooldownMs={cooldowns.CLEAN.remainingMs}
             cooldownTotalMs={cooldowns.CLEAN.totalMs}
             disabled={pet.stage === 'dead' || pet.isSleeping}
-            accent="rgba(126,200,227,0.28)"
+            accent={isCleaningMode ? 'rgba(126,200,227,0.60)' : 'rgba(126,200,227,0.28)'}
           />
           {/* Sleep / Wake Up — swaps based on isSleeping, shares a 10 s cooldown */}
           {pet.isSleeping ? (
@@ -569,6 +679,27 @@ export function PetScreen() {
 
       {/* Toast overlay */}
       <ToastContainer />
+
+      {/* Floating blush-puff cursor — follows mouse during cleaning mode */}
+      <div
+        ref={blushCursorRef}
+        style={{
+          position:      'fixed',
+          pointerEvents: 'none',
+          zIndex:        9999,
+          left:          '-100px',
+          top:           '-100px',
+          transform:     'translate(-50%, -50%)',
+          display:       isCleaningMode ? 'block' : 'none',
+        }}
+      >
+        <div style={{
+          animation: 'blush-cursor-bob 0.7s ease-in-out infinite',
+          filter:    'drop-shadow(0 2px 8px rgba(255,107,157,0.45))',
+        }}>
+          <BlushPuffCursor />
+        </div>
+      </div>
     </div>
   );
 }
