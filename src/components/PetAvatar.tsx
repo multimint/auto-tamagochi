@@ -32,6 +32,10 @@ interface PetAvatarProps {
   foodPos?:          { x: number; y: number } | null;
   /** Fired when the pet walks to the food and starts eating */
   onFoodConsumed?:   () => void;
+  /** Position of the toy placed in the room (null = no toy) */
+  toyPos?:           { x: number; y: number } | null;
+  /** Fired when the pet walks to the toy and starts playing */
+  onToyConsumed?:    () => void;
 }
 
 /** A floating heart / sparkle that pops on click */
@@ -258,6 +262,142 @@ function SpeechBubble({ text, facingLeft }: { text: string; facingLeft: boolean 
   );
 }
 
+/* ── Toy ball (pixel-art yarn ball — placed in room when player clicks Play) ── */
+
+function ToyBall() {
+  const [phase, setPhase] = useState<'in' | 'idle'>('in');
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Pulsing glow ring */}
+      <div style={{
+        position:      'absolute',
+        inset:         -10,
+        borderRadius:  '50%',
+        background:    'radial-gradient(circle, rgba(120,216,152,0.50) 0%, transparent 70%)',
+        animation:     'food-hunger-ring 1.2s ease-in-out infinite',
+        pointerEvents: 'none',
+      }} />
+      <div
+        style={{
+          animation:       phase === 'in'
+            ? 'food-drop-in 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards'
+            : 'food-idle-sway 2.5s ease-in-out infinite',
+          transformOrigin: 'center bottom',
+          filter:          'drop-shadow(0 0 7px rgba(120,216,152,0.70)) drop-shadow(0 2px 5px rgba(0,0,0,0.22))',
+        }}
+        onAnimationEnd={phase === 'in' ? () => setPhase('idle') : undefined}
+      >
+        <svg width="36" height="36" viewBox="0 0 36 36" shapeRendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          {/* Ball outer */}
+          <rect x="10" y="4"  width="16" height="28" fill="#78D898" />
+          <rect x="4"  y="10" width="28" height="16" fill="#78D898" />
+          <rect x="6"  y="6"  width="24" height="24" fill="#78D898" />
+          {/* Yarn lines horizontal */}
+          <rect x="6"  y="12" width="24" height="2" fill="#5AC07A" opacity="0.75" />
+          <rect x="6"  y="22" width="24" height="2" fill="#5AC07A" opacity="0.75" />
+          {/* Yarn lines vertical */}
+          <rect x="12" y="6"  width="2"  height="24" fill="#5AC07A" opacity="0.75" />
+          <rect x="22" y="6"  width="2"  height="24" fill="#5AC07A" opacity="0.75" />
+          {/* Diagonal wrap lines */}
+          <rect x="8"  y="8"  width="2"  height="2"  fill="#5AC07A" opacity="0.6" />
+          <rect x="26" y="8"  width="2"  height="2"  fill="#5AC07A" opacity="0.6" />
+          <rect x="8"  y="26" width="2"  height="2"  fill="#5AC07A" opacity="0.6" />
+          <rect x="26" y="26" width="2"  height="2"  fill="#5AC07A" opacity="0.6" />
+          {/* Highlight */}
+          <rect x="8"  y="8"  width="6"  height="4"  fill="#A8ECC0" opacity="0.70" />
+          <rect x="8"  y="8"  width="2"  height="2"  fill="#CCF4DA" opacity="0.80" />
+          {/* Yarn tail curling out */}
+          <rect x="26" y="4"  width="2"  height="2"  fill="#78D898" />
+          <rect x="28" y="2"  width="2"  height="4"  fill="#78D898" />
+          <rect x="30" y="4"  width="2"  height="2"  fill="#78D898" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/* ── Bed (pixel-art, placed in room when pet is sleeping) ── */
+
+function Bed() {
+  return (
+    <div style={{
+      animation:       'food-drop-in 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards',
+      transformOrigin: 'center bottom',
+      filter:          'drop-shadow(0 3px 10px rgba(180,150,220,0.55)) drop-shadow(0 2px 5px rgba(0,0,0,0.18))',
+    }}>
+      <svg width="74" height="48" viewBox="0 0 74 48" shapeRendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+        {/* Headboard */}
+        <rect x="2"  y="6"  width="10" height="30" fill="#C0A0D8" />
+        <rect x="4"  y="8"  width="6"  height="26" fill="#D4B8EC" />
+        {/* Star on headboard */}
+        <rect x="6"  y="12" width="2"  height="6"  fill="#FF6B9D" opacity="0.9" />
+        <rect x="4"  y="14" width="6"  height="2"  fill="#FF6B9D" opacity="0.9" />
+        {/* Footboard */}
+        <rect x="62" y="14" width="10" height="22" fill="#C0A0D8" />
+        <rect x="64" y="16" width="6"  height="18" fill="#D4B8EC" />
+        {/* Bed frame sides */}
+        <rect x="2"  y="34" width="70" height="8"  fill="#C0A0D8" />
+        <rect x="2"  y="36" width="70" height="6"  fill="#D4B8EC" />
+        {/* Mattress */}
+        <rect x="12" y="18" width="50" height="18" fill="#FFF0F8" />
+        <rect x="12" y="18" width="50" height="4"  fill="#FFE4F4" />
+        {/* Blanket / duvet */}
+        <rect x="28" y="18" width="34" height="18" fill="#FFB3D0" />
+        <rect x="28" y="18" width="34" height="5"  fill="#FF9ABF" />
+        {/* Blanket fold line */}
+        <rect x="28" y="22" width="34" height="2"  fill="#FF79AE" opacity="0.5" />
+        {/* Pillow */}
+        <rect x="13" y="20" width="14" height="12" fill="#FFFFFF" />
+        <rect x="14" y="21" width="12" height="10" fill="#FFF0F8" />
+        {/* Pillow detail dots */}
+        <rect x="16" y="23" width="2"  height="2"  fill="#FFB3D0" opacity="0.7" />
+        <rect x="20" y="26" width="2"  height="2"  fill="#FFB3D0" opacity="0.7" />
+        <rect x="17" y="28" width="2"  height="2"  fill="#FFB3D0" opacity="0.5" />
+        {/* Bed legs */}
+        <rect x="4"  y="40" width="4"  height="6"  fill="#A888C0" />
+        <rect x="66" y="40" width="4"  height="6"  fill="#A888C0" />
+      </svg>
+    </div>
+  );
+}
+
+/* ── Room bubbles (scattered soap bubbles during cleaning / grooming) ── */
+
+function RoomBubbles() {
+  const bubbles = [
+    { left: '12%', top: '38%', size: 16, delay: '0s',    dur: '2.6s', color: '#7EC8E3' },
+    { left: '28%', top: '52%', size: 11, delay: '0.55s', dur: '3.1s', color: '#FF9ABF' },
+    { left: '20%', top: '65%', size: 9,  delay: '1.1s',  dur: '2.8s', color: '#7EC8E3' },
+    { left: '52%', top: '32%', size: 14, delay: '0.3s',  dur: '2.4s', color: '#FFD0E8' },
+    { left: '68%', top: '56%', size: 10, delay: '0.85s', dur: '3.0s', color: '#7EC8E3' },
+    { left: '78%', top: '42%', size: 13, delay: '1.4s',  dur: '2.7s', color: '#FF9ABF' },
+    { left: '85%', top: '68%', size: 8,  delay: '0.2s',  dur: '3.4s', color: '#FFD0E8' },
+    { left: '40%', top: '70%', size: 12, delay: '1.0s',  dur: '2.9s', color: '#7EC8E3' },
+    { left: '60%', top: '78%', size: 7,  delay: '0.65s', dur: '3.2s', color: '#FF9ABF' },
+    { left: '8%',  top: '55%', size: 10, delay: '1.7s',  dur: '2.5s', color: '#FFD0E8' },
+  ];
+  return (
+    <>
+      {bubbles.map((b, i) => (
+        <div key={i} style={{
+          position:       'absolute',
+          left:           b.left,
+          top:            b.top,
+          width:          b.size,
+          height:         b.size,
+          borderRadius:   '50%',
+          border:         `2px solid ${b.color}`,
+          background:     `${b.color}2A`,
+          animation:      `bubble-float ${b.dur} ease-out infinite`,
+          animationDelay: b.delay,
+          pointerEvents:  'none',
+          zIndex:         1,
+        }} />
+      ))}
+    </>
+  );
+}
+
 /* ── Food bowl (pixel-art, placed in room when player clicks Feed) ── */
 
 function FoodBowl() {
@@ -423,6 +563,8 @@ export function PetAvatar({
   onCancelClean,
   foodPos,
   onFoodConsumed,
+  toyPos,
+  onToyConsumed,
 }: PetAvatarProps) {
   const Sprite     = SPRITE_MAP[stage] ?? BabySprite;
   const baseClass  = getAnimClass(mood, pendingEvolution, activeAnimation);
@@ -474,10 +616,13 @@ export function PetAvatar({
 
   useEffect(() => () => clearTimeout(petBounceTimer.current), []);
 
-  /* ── Stable ref so the walk timer can call the latest onFoodConsumed
-        without being listed in the effect's dep array ── */
+  /* ── Stable refs so walk timers can call the latest callbacks
+        without being listed in the effect's dep arrays ── */
   const onFoodConsumedRef = useRef(onFoodConsumed);
   useEffect(() => { onFoodConsumedRef.current = onFoodConsumed; }, [onFoodConsumed]);
+
+  const onToyConsumedRef = useRef(onToyConsumed);
+  useEffect(() => { onToyConsumedRef.current = onToyConsumed; }, [onToyConsumed]);
 
   /* ── Walking state ── */
   const [walkPos,    setWalkPos]    = useState<WalkPos>({ x: 50, y: 70 });
@@ -545,11 +690,28 @@ export function PetAvatar({
       }, WALK_MS + 120);
       return () => clearTimeout(walkTimer.current);
     }
+    if (toyPos) {
+      // Walk straight to the toy
+      clearTimeout(walkTimer.current);
+      setWalkPos(prev => {
+        setFacingLeft(toyPos.x < prev.x);
+        return { x: toyPos.x, y: toyPos.y };
+      });
+      setIsWalking(true);
+      walkTimer.current = setTimeout(() => {
+        setIsWalking(false);
+        // Notify parent — it will apply stats + trigger playing animation
+        onToyConsumedRef.current?.();
+        // Resume normal walking after playing animation (~2.1 s)
+        walkTimer.current = setTimeout(scheduleWalk, 2_200);
+      }, WALK_MS + 120);
+      return () => clearTimeout(walkTimer.current);
+    }
     // alive, awake, no action — start the walk loop
     scheduleWalk();
     return () => clearTimeout(walkTimer.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDead, isSleeping, activeAnimation, isCleaningMode, foodPos]);
+  }, [isDead, isSleeping, activeAnimation, isCleaningMode, foodPos, toyPos]);
 
   /* ── Depth scale from y position ── */
   // y=18 (back) → 0.68   y=80 (front) → 1.08
@@ -591,6 +753,27 @@ export function PetAvatar({
       {/* Room background — renders behind the cat */}
       <RoomBackground />
 
+      {/* Room bubbles — float during cleaning mode or grooming animation */}
+      {(isCleaningMode || activeAnimation === 'grooming') && <RoomBubbles />}
+
+      {/* Bed — appears when pet is sleeping, at the sleep position */}
+      {isSleeping && (
+        <div
+          key="sleep-bed"
+          style={{
+            position:        'absolute',
+            left:            '50%',
+            top:             '74%',
+            transform:       `translate(-50%, -50%) scale(0.94)`,
+            transformOrigin: 'center bottom',
+            pointerEvents:   'none',
+            zIndex:          1,
+          }}
+        >
+          <Bed />
+        </div>
+      )}
+
       {/* Food bowl — placed on the floor when player clicks Feed.
           Key changes when a new bowl is placed, remounting the component
           so the drop-in animation replays. */}
@@ -608,6 +791,25 @@ export function PetAvatar({
           }}
         >
           <FoodBowl />
+        </div>
+      )}
+
+      {/* Toy ball — placed on the floor when player clicks Play.
+          Key changes when a new toy is placed so the drop-in animation replays. */}
+      {toyPos && (
+        <div
+          key={`toy-${Math.round(toyPos.x)}-${Math.round(toyPos.y)}`}
+          style={{
+            position:        'absolute',
+            left:            `${toyPos.x}%`,
+            top:             `${toyPos.y}%`,
+            transform:       `translate(-50%, -50%) scale(${(0.68 + (toyPos.y / 100) * 0.40).toFixed(3)})`,
+            transformOrigin: 'center bottom',
+            pointerEvents:   'none',
+            zIndex:          1,
+          }}
+        >
+          <ToyBall />
         </div>
       )}
 

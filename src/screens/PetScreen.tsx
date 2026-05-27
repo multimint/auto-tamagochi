@@ -198,6 +198,19 @@ export function PetScreen() {
   /** Position of the food bowl on the floor (null = no food visible). */
   const [foodPos, setFoodPos] = useState<{ x: number; y: number } | null>(null);
 
+  // ── Toy in room ──────────────────────────────────────────────
+  /** Position of the yarn-ball toy on the floor (null = no toy visible). */
+  const [toyPos, setToyPos] = useState<{ x: number; y: number } | null>(null);
+
+  // Clear room props when the pet falls asleep
+  useEffect(() => {
+    if (pet.isSleeping) {
+      setFoodPos(null);
+      setToyPos(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet.isSleeping]);
+
   // ── Pet speech bubble ────────────────────────────────────────
   const [petSpeech,    setPetSpeech]    = useState<string | null>(null);
   const [petSpeechKey, setPetSpeechKey] = useState(0);
@@ -352,15 +365,12 @@ export function PetScreen() {
     } else if (actionType === 'PLAY') {
       if (pet.isSleeping)  { petSay(pickRandom(ACTION_DIALOGS.sleeping));  return; }
       if (pet.energy < 15) { petSay(pickRandom(ACTION_DIALOGS.playTired)); return; }
-      dispatch({ type: 'PLAY' });
-      triggerSprite('playing', 2000);
-      petSay(pickRandom(ACTION_DIALOGS.play));
+      // Place the yarn-ball toy on the floor — the pet walks to it.
+      // Stats + sound fire via handleToyConsumed when the pet arrives.
+      const tx = 18 + Math.random() * 57;   // x: 18–75 %
+      const ty = 68 + Math.random() * 10;   // y: 68–78 % (floor band)
+      setToyPos({ x: tx, y: ty });
       cooldowns.PLAY.trigger();
-      if (settings.soundEnabled) playPlaySound();
-      if (!achievements.includes('first_play')) {
-        dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_play' } });
-        addToast('Achievement: First Play! 🎮', 'success');
-      }
     } else if (actionType === 'CLEAN') {
       if (pet.isSleeping) { petSay(pickRandom(ACTION_DIALOGS.sleeping)); return; }
       dispatch({ type: 'CLEAN' });
@@ -433,6 +443,20 @@ export function PetScreen() {
     if (!achievements.includes('first_feed')) {
       dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_feed' } });
       addToast('Achievement: First Feed! 🌟', 'success');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, triggerSprite, petSay, settings.soundEnabled, achievements, addToast]);
+
+  /** Called by PetAvatar when the pet walks to the yarn ball and plays with it. */
+  const handleToyConsumed = useCallback(() => {
+    setToyPos(null);
+    dispatch({ type: 'PLAY' });
+    triggerSprite('playing', 2000);
+    petSay(pickRandom(ACTION_DIALOGS.play));
+    if (settings.soundEnabled) playPlaySound();
+    if (!achievements.includes('first_play')) {
+      dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_play' } });
+      addToast('Achievement: First Play! 🎮', 'success');
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, triggerSprite, petSay, settings.soundEnabled, achievements, addToast]);
@@ -570,6 +594,8 @@ export function PetScreen() {
             onCancelClean={() => setIsCleaningMode(false)}
             foodPos={foodPos}
             onFoodConsumed={handleFoodConsumed}
+            toyPos={toyPos}
+            onToyConsumed={handleToyConsumed}
           />
         </section>
 
