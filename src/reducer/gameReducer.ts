@@ -4,11 +4,15 @@ import { applyOfflineDecay } from '@/utils/offlineLogic';
 import { clearSave, writeSave } from '@/utils/localStorage';
 import { nowMs } from '@/utils/timeUtils';
 import { createFreshSave } from './initialState';
+import { ACCESSORY_BY_ID, EVOLUTION_COIN_REWARD } from '@/data/accessories';
 import type { FullState, GameAction } from '@/types';
 
 export function gameReducer(state: FullState, action: GameAction): FullState {
   const { save, runtime } = state;
   const { pet, inventory, settings, achievements, gameState } = save;
+  const coins               = save.coins               ?? 0;
+  const ownedAccessories    = save.ownedAccessories    ?? [];
+  const equippedAccessories = save.equippedAccessories ?? {};
 
   switch (action.type) {
 
@@ -35,6 +39,7 @@ export function gameReducer(state: FullState, action: GameAction): FullState {
       // Evolution check
       const evo = checkEvolution(newPet);
       let pendingEvolutionStage = runtime.pendingEvolutionStage;
+      let newCoins = coins;
       if (evo) {
         const bonus = getEvolutionBonus(evo.isHealthy);
         newPet = {
@@ -46,11 +51,14 @@ export function gameReducer(state: FullState, action: GameAction): FullState {
           happiness: clamp(newPet.happiness + (bonus.happiness ?? 0)),
         };
         pendingEvolutionStage = evo.toStage;
+        // Award coins for reaching a new stage
+        newCoins += EVOLUTION_COIN_REWARD[evo.toStage] ?? 0;
       }
 
       const newSave = {
         ...save,
-        pet: newPet,
+        pet:   newPet,
+        coins: newCoins,
         gameState: { ...gameState, lastActiveAt: nowMs(), lastSavedAt: nowMs() },
       };
       writeSave(newSave);
@@ -216,8 +224,15 @@ export function gameReducer(state: FullState, action: GameAction): FullState {
     case 'LOAD': {
       const loadedSave = action.payload.save;
       const screen = loadedSave.pet.stage === 'dead' ? 'gameover' : 'pet';
+      // Migrate legacy saves that don't have accessory fields
+      const migratedSave: typeof loadedSave = {
+        ...loadedSave,
+        coins:               loadedSave.coins               ?? 0,
+        ownedAccessories:    loadedSave.ownedAccessories    ?? [],
+        equippedAccessories: loadedSave.equippedAccessories ?? {},
+      };
       return {
-        save:    loadedSave,
+        save:    migratedSave,
         runtime: { currentScreen: screen, isLoaded: true, pendingEvolutionStage: null },
       };
     }
@@ -269,6 +284,44 @@ export function gameReducer(state: FullState, action: GameAction): FullState {
     // ── CLEAR_PENDING_EVOLUTION ───────────────────────────────────────────────
     case 'CLEAR_PENDING_EVOLUTION': {
       return { ...state, runtime: { ...runtime, pendingEvolutionStage: null } };
+    }
+
+    // ── BUY_ACCESSORY ─────────────────────────────────────────────────────────
+    case 'BUY_ACCESSORY': {
+      const { id } = action.payload;
+      const item = ACCESSORY_BY_ID[id];
+      if (!item) return state;
+      if (ownedAccessories.includes(id)) return state;   // already owned
+      if (coins < item.price) return state;              // not enough coins
+      const newSave = {
+        ...save,
+        coins:            coins - item.price,
+        ownedAccessories: [...ownedAccessories, id],
+      };
+      writeSave(newSave);
+      return { ...state, save: newSave };
+    }
+
+    // ── EQUIP_ACCESSORY ───────────────────────────────────────────────────────
+    case 'EQUIP_ACCESSORY': {
+      const { id, slot } = action.payload;
+      if (!ownedAccessories.includes(id)) return state;  // must own it first
+      const newSave = {
+        ...save,
+        equippedAccessories: { ...equippedAccessories, [slot]: id },
+      };
+      writeSave(newSave);
+      return { ...state, save: newSave };
+    }
+
+    // ── UNEQUIP_ACCESSORY ─────────────────────────────────────────────────────
+    case 'UNEQUIP_ACCESSORY': {
+      const { slot } = action.payload;
+      const next = { ...equippedAccessories };
+      delete next[slot];
+      const newSave = { ...save, equippedAccessories: next };
+      writeSave(newSave);
+      return { ...state, save: newSave };
     }
 
     default:

@@ -1,5 +1,5 @@
 import type { PetStage } from './pet';
-import type { GameSave, Screen, Settings } from './game';
+import type { AccessorySlot, GameSave, Screen, Settings } from './game';
 
 export type GameAction =
   | { type: 'TICK'; payload: { deltaMs: number } }
@@ -21,4 +21,7 @@ export type GameAction =
   | { type: 'UNLOCK_ACHIEVEMENT'; payload: { id: string } }
   | { type: 'NAVIGATE'; payload: { screen: Screen } }
   | { type: 'RECONCILE_OFFLINE'; payload: { nowMs: number } }
-  | { type: 'CLEAR_PENDING_EVOLUTION' };
+  | { type: 'CLEAR_PENDING_EVOLUTION' }
+  | { type: 'BUY_ACCESSORY';   payload: { id: string } }
+  | { type: 'EQUIP_ACCESSORY'; payload: { id: string; slot: AccessorySlot } }
+  | { type: 'UNEQUIP_ACCESSORY'; payload: { slot: AccessorySlot } };

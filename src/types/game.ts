@@ -7,7 +7,26 @@ export type Screen =
   | 'achievements'
   | 'settings'
   | 'tutorial'
-  | 'gameover';
+  | 'gameover'
+  | 'accessory';
+
+export type AccessorySlot = 'hat' | 'outfit' | 'face';
+
+export type AccessoryCategory = 'hat' | 'outfit' | 'face';
+
+export interface AccessoryDefinition {
+  id: string;
+  name: string;
+  emoji: string;
+  description: string;
+  category: AccessoryCategory;
+  price: number;
+  /** Pixel-art SVG overlay rendered on top of the sprite */
+  overlayComponent: string;   // identifier — resolved in PetAvatar
+}
+
+/** equippedAccessories maps slot → accessory id (undefined = nothing equipped) */
+export type EquippedAccessories = Partial<Record<AccessorySlot, string>>;
 
 export type ToastType = 'info' | 'warning' | 'error' | 'success';
 
@@ -39,6 +58,9 @@ export interface GameSave {
   settings: Settings;
   achievements: string[];
   gameState: GameMeta;
+  coins: number;
+  ownedAccessories: string[];           // list of accessory ids
+  equippedAccessories: EquippedAccessories;
 }
 
 export interface RuntimeState {

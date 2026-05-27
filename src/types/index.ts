@@ -11,3 +11,9 @@ export type {
   ItemDefinition,
 } from './game';
 export type { GameAction } from './actions';
+export type {
+  AccessorySlot,
+  AccessoryCategory,
+  AccessoryDefinition,
+  EquippedAccessories,
+} from './game';

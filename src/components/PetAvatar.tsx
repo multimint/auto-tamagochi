@@ -36,6 +36,8 @@ interface PetAvatarProps {
   toyPos?:           { x: number; y: number } | null;
   /** Fired when the pet walks to the toy and starts playing */
   onToyConsumed?:    () => void;
+  /** IDs of currently equipped accessories — rendered as overlays on the sprite */
+  equippedAccessoryIds?: string[];
 }
 
 /** A floating heart / sparkle that pops on click */
@@ -535,6 +537,199 @@ function RoomBackground() {
   );
 }
 
+/* ── Accessory overlays — pixel-art items drawn on top of the sprite ── */
+
+function AccessoryOverlays({ ids }: { ids: string[] }) {
+  if (ids.length === 0) return null;
+  return (
+    <>
+      {/* ── HAT overlays — positioned at top of sprite ── */}
+      {ids.includes('flower_crown') && (
+        <div style={{ position:'absolute', top:'-28%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="80" height="20" viewBox="0 0 80 20" shapeRendering="crispEdges">
+            {[2,16,30,44,58].map((x,i) => (
+              <rect key={i} x={x} y="0" width="14" height="14" fill={i%2===0?'#FFB3D0':'#FF9ABF'} />
+            ))}
+            {[4,18,32,46,60].map((x,i) => (
+              <rect key={i} x={x+1} y="1" width="10" height="8" fill="#FFE8F4" />
+            ))}
+            <rect x="36" y="14" width="8" height="6" fill="#78D898" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('blue_cap') && (
+        <div style={{ position:'absolute', top:'-30%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="90" height="32" viewBox="0 0 90 32" shapeRendering="crispEdges">
+            <rect x="8"  y="14" width="74" height="16" fill="#4A90D9" />
+            <rect x="16" y="6"  width="58" height="14" fill="#5BA0E9" />
+            <rect x="0"  y="24" width="90" height="6"  fill="#3A7CC9" />
+            <rect x="18" y="8"  width="14" height="6"  fill="#7EC8E3" opacity="0.5" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('top_hat') && (
+        <div style={{ position:'absolute', top:'-55%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="60" height="52" viewBox="0 0 60 52" shapeRendering="crispEdges">
+            <rect x="4"  y="42" width="52" height="8"  fill="#2D2D2D" />
+            <rect x="12" y="6"  width="36" height="38" fill="#1A1A1A" />
+            <rect x="12" y="6"  width="36" height="6"  fill="#3A3A3A" />
+            <rect x="14" y="8"  width="12" height="10" fill="#3A3A3A" opacity="0.4" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('witch_hat') && (
+        <div style={{ position:'absolute', top:'-70%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="70" height="60" viewBox="0 0 70 60" shapeRendering="crispEdges">
+            <rect x="0"  y="48" width="70" height="10" fill="#6B35A8" />
+            <rect x="12" y="30" width="46" height="22" fill="#8B45C8" />
+            <rect x="22" y="14" width="26" height="20" fill="#7B3DB8" />
+            <rect x="30" y="2"  width="10" height="16" fill="#6B35A8" />
+            <rect x="14" y="38" width="42" height="6"  fill="#FFD700" />
+            <rect x="18" y="34" width="6"  height="4"  fill="#FFD700" />
+            <rect x="22" y="31" width="4"  height="3"  fill="#FFE84D" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('party_hat') && (
+        <div style={{ position:'absolute', top:'-52%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="56" height="52" viewBox="0 0 56 52" shapeRendering="crispEdges">
+            <rect x="8"  y="44" width="40" height="8"  fill="#FF9ABF" />
+            <rect x="14" y="28" width="28" height="20" fill="#FF6B9D" />
+            <rect x="20" y="14" width="16" height="18" fill="#FF9ABF" />
+            <rect x="24" y="2"  width="8"  height="16" fill="#FFD700" />
+            <rect x="10" y="32" width="4"  height="4"  fill="#FFD700" />
+            <rect x="38" y="36" width="4"  height="4"  fill="#7EC8E3" />
+            <rect x="22" y="20" width="4"  height="4"  fill="#FFD700" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('gold_crown') && (
+        <div style={{ position:'absolute', top:'-34%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="74" height="30" viewBox="0 0 74 30" shapeRendering="crispEdges">
+            <rect x="4"  y="18" width="66" height="10" fill="#E6A800" />
+            <rect x="4"  y="18" width="66" height="4"  fill="#FFD700" />
+            <rect x="4"  y="6"  width="12" height="14" fill="#FFD700" />
+            <rect x="31" y="0"  width="12" height="20" fill="#FFD700" />
+            <rect x="58" y="6"  width="12" height="14" fill="#FFD700" />
+            <rect x="33" y="2"  width="8"  height="6"  fill="#FF6B9D" />
+            <rect x="7"  y="9"  width="4"  height="4"  fill="#FF6B9D" />
+            <rect x="61" y="9"  width="4"  height="4"  fill="#FF6B9D" />
+            <rect x="6"  y="20" width="10" height="3"  fill="#FFE84D" opacity="0.7" />
+            <rect x="32" y="20" width="10" height="3"  fill="#FFE84D" opacity="0.7" />
+            <rect x="58" y="20" width="10" height="3"  fill="#FFE84D" opacity="0.7" />
+          </svg>
+        </div>
+      )}
+
+      {/* ── OUTFIT overlays — positioned at body/neck area ── */}
+      {ids.includes('red_bow') && (
+        <div style={{ position:'absolute', top:'42%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="64" height="32" viewBox="0 0 64 32" shapeRendering="crispEdges">
+            <rect x="0"  y="4"  width="24" height="20" fill="#FF2244" />
+            <rect x="2"  y="6"  width="20" height="16" fill="#FF4466" />
+            <rect x="4"  y="8"  width="10" height="8"  fill="#FF6688" opacity="0.5" />
+            <rect x="40" y="4"  width="24" height="20" fill="#FF2244" />
+            <rect x="42" y="6"  width="20" height="16" fill="#FF4466" />
+            <rect x="44" y="8"  width="10" height="8"  fill="#FF6688" opacity="0.5" />
+            <rect x="24" y="10" width="16" height="12" fill="#CC1133" />
+            <rect x="27" y="13" width="10" height="6"  fill="#FF2244" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('blue_scarf') && (
+        <div style={{ position:'absolute', top:'34%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="88" height="16" viewBox="0 0 88 16" shapeRendering="crispEdges">
+            <rect x="0"  y="0" width="88" height="12" fill="#4A90D9" />
+            <rect x="0"  y="0" width="88" height="4"  fill="#5BA0E9" />
+            {[0,14,28,42,56,70].map((x,i) => (
+              <rect key={i} x={x} y="2" width="10" height="3" fill="#7EC8E3" opacity="0.6" />
+            ))}
+            <rect x="54" y="10" width="18" height="12" fill="#4A90D9" />
+            <rect x="56" y="12" width="14" height="8"  fill="#5BA0E9" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('tiny_tie') && (
+        <div style={{ position:'absolute', top:'38%', left:'50%', transform:'translateX(-50%) translateX(8px)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="18" height="44" viewBox="0 0 18 44" shapeRendering="crispEdges">
+            <rect x="5"  y="0"  width="8"  height="10" fill="#CC1133" />
+            <rect x="3"  y="8"  width="12" height="6"  fill="#AA0022" />
+            <rect x="5"  y="12" width="8"  height="30" fill="#FF2244" />
+            <rect x="6"  y="12" width="6"  height="30" fill="#FF4466" />
+            <rect x="5"  y="40" width="8"  height="4"  fill="#CC1133" />
+            <rect x="3"  y="40" width="12" height="2"  fill="#AA0022" />
+            <rect x="5"  y="18" width="8"  height="2"  fill="#FFD700" opacity="0.7" />
+            <rect x="5"  y="28" width="8"  height="2"  fill="#FFD700" opacity="0.7" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('rainbow_shirt') && (
+        <div style={{ position:'absolute', top:'45%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="72" height="34" viewBox="0 0 72 34" shapeRendering="crispEdges">
+            <rect x="10" y="0"  width="52" height="34" fill="#FF6B9D" />
+            <rect x="0"  y="0"  width="12" height="24" fill="#FF9ABF" />
+            <rect x="60" y="0"  width="12" height="24" fill="#FF9ABF" />
+            <rect x="10" y="4"  width="52" height="5"  fill="#FF6644" opacity="0.85" />
+            <rect x="10" y="11" width="52" height="5"  fill="#FFD700" opacity="0.85" />
+            <rect x="10" y="18" width="52" height="5"  fill="#78D898" opacity="0.85" />
+            <rect x="10" y="25" width="52" height="5"  fill="#7EC8E3" opacity="0.85" />
+          </svg>
+        </div>
+      )}
+
+      {/* ── FACE overlays — positioned at face/eye level ── */}
+      {ids.includes('round_glasses') && (
+        <div style={{ position:'absolute', top:'30%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="80" height="20" viewBox="0 0 80 20" shapeRendering="crispEdges">
+            <rect x="2"  y="2"  width="30" height="16" fill="none" stroke="#2D2D2D" strokeWidth="4" />
+            <rect x="4"  y="3"  width="12" height="7"  fill="#C8EAF8" opacity="0.45" />
+            <rect x="32" y="8"  width="16" height="4"  fill="#2D2D2D" />
+            <rect x="48" y="2"  width="30" height="16" fill="none" stroke="#2D2D2D" strokeWidth="4" />
+            <rect x="50" y="3"  width="12" height="7"  fill="#C8EAF8" opacity="0.45" />
+            <rect x="0"  y="9"  width="4"  height="2"  fill="#2D2D2D" />
+            <rect x="76" y="9"  width="4"  height="2"  fill="#2D2D2D" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('heart_glasses') && (
+        <div style={{ position:'absolute', top:'28%', left:'50%', transform:'translateX(-50%)', pointerEvents:'none', zIndex:3 }}>
+          <svg width="86" height="26" viewBox="0 0 86 26" shapeRendering="crispEdges">
+            <rect x="2"  y="4"  width="7"  height="7"  fill="#FF6B9D" />
+            <rect x="11" y="4"  width="7"  height="7"  fill="#FF6B9D" />
+            <rect x="0"  y="9"  width="22" height="10" fill="#FF6B9D" />
+            <rect x="2"  y="19" width="18" height="5"  fill="#FF6B9D" />
+            <rect x="4"  y="24" width="14" height="2"  fill="#FF6B9D" />
+            <rect x="3"  y="9"  width="6"  height="5"  fill="#FFB3D0" opacity="0.5" />
+            <rect x="22" y="12" width="42" height="4"  fill="#CC3377" />
+            <rect x="64" y="4"  width="7"  height="7"  fill="#FF6B9D" />
+            <rect x="73" y="4"  width="7"  height="7"  fill="#FF6B9D" />
+            <rect x="62" y="9"  width="24" height="10" fill="#FF6B9D" />
+            <rect x="64" y="19" width="20" height="5"  fill="#FF6B9D" />
+            <rect x="66" y="24" width="16" height="2"  fill="#FF6B9D" />
+            <rect x="65" y="9"  width="6"  height="5"  fill="#FFB3D0" opacity="0.5" />
+            <rect x="0"  y="13" width="2"  height="3"  fill="#CC3377" />
+            <rect x="84" y="13" width="2"  height="3"  fill="#CC3377" />
+          </svg>
+        </div>
+      )}
+      {ids.includes('star_badge') && (
+        <div style={{ position:'absolute', top:'48%', left:'16%', pointerEvents:'none', zIndex:3 }}>
+          <svg width="22" height="22" viewBox="0 0 22 22" shapeRendering="crispEdges">
+            <rect x="7"  y="0"  width="8"  height="22" fill="#FFD700" />
+            <rect x="0"  y="7"  width="22" height="8"  fill="#FFD700" />
+            <rect x="2"  y="2"  width="5"  height="5"  fill="#FFD700" />
+            <rect x="15" y="2"  width="5"  height="5"  fill="#FFD700" />
+            <rect x="2"  y="15" width="5"  height="5"  fill="#FFD700" />
+            <rect x="15" y="15" width="5"  height="5"  fill="#FFD700" />
+            <rect x="4"  y="4"  width="14" height="14" fill="#FFE84D" />
+            <rect x="6"  y="5"  width="5"  height="4"  fill="#FFF08A" opacity="0.7" />
+          </svg>
+        </div>
+      )}
+    </>
+  );
+}
+
 /* ── Walking state helpers ── */
 
 const SLEEP_POS: WalkPos  = { x: 50, y: 70 };
@@ -565,6 +760,7 @@ export function PetAvatar({
   onFoodConsumed,
   toyPos,
   onToyConsumed,
+  equippedAccessoryIds = [],
 }: PetAvatarProps) {
   const Sprite     = SPRITE_MAP[stage] ?? BabySprite;
   const baseClass  = getAnimClass(mood, pendingEvolution, activeAnimation);
@@ -856,6 +1052,9 @@ export function PetAvatar({
             style={{ width: '100%', height: '100%' }}
           />
         </div>
+
+        {/* Accessory overlays — drawn on top of the sprite */}
+        {!isDead && <AccessoryOverlays ids={equippedAccessoryIds} />}
 
         {/* Action overlays — follow the cat */}
         {activeAnimation === 'eating'   && <EatingOverlay />}

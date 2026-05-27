@@ -49,10 +49,13 @@ export function createFreshPet(name: string, generation = 1): PetState {
 export function createFreshSave(name: string, generation = 1): GameSave {
   const now = nowMs();
   return {
-    pet:          createFreshPet(name, generation),
-    inventory:    { ...DEFAULT_INVENTORY },
-    settings:     { ...DEFAULT_SETTINGS },
-    achievements: [],
+    pet:                 createFreshPet(name, generation),
+    inventory:           { ...DEFAULT_INVENTORY },
+    settings:            { ...DEFAULT_SETTINGS },
+    achievements:        [],
+    coins:               0,
+    ownedAccessories:    [],
+    equippedAccessories: {},
     gameState: {
       lastSavedAt:  now,
       lastActiveAt: now,

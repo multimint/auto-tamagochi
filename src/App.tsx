@@ -9,6 +9,7 @@ import { AchievementsScreen } from '@/screens/AchievementsScreen';
 import { SettingsScreen }     from '@/screens/SettingsScreen';
 import { TutorialScreen }     from '@/screens/TutorialScreen';
 import { GameOverScreen }     from '@/screens/GameOverScreen';
+import { AccessoryScreen }    from '@/screens/AccessoryScreen';
 import { DesktopSidebar }     from '@/components/DesktopSidebar';
 import { useMediaQuery }      from '@/hooks/useMediaQuery';
 
@@ -22,6 +23,7 @@ const SCREEN_COMPONENTS: Record<Screen, React.ComponentType> = {
   settings:     SettingsScreen,
   tutorial:     TutorialScreen,
   gameover:     GameOverScreen,
+  accessory:    AccessoryScreen,
 };
 
 // Screens where the sidebar should NOT appear (no active pet session)

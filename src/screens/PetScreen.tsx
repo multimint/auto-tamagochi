@@ -185,6 +185,9 @@ function BlushPuffCursor() {
 
 export function PetScreen() {
   const { state, dispatch, pet, settings, achievements } = useGame();
+  const coins               = state.save.coins               ?? 0;
+  const equippedAccessories = state.save.equippedAccessories ?? {};
+  const equippedAccessoryIds = Object.values(equippedAccessories).filter(Boolean) as string[];
   const navigate    = useNavigate();
   const { addToast } = useToast();
   const cooldowns   = useCooldowns();
@@ -480,6 +483,22 @@ export function PetScreen() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+          {/* Coin balance chip */}
+          <div style={{
+            display:      'flex',
+            alignItems:   'center',
+            gap:          3,
+            background:   'rgba(255,215,0,0.18)',
+            border:       '1.5px solid #E6A800',
+            borderRadius: 'var(--radius-full)',
+            padding:      '2px 7px',
+            fontFamily:   'var(--font-display)',
+            fontSize:     '0.45rem',
+            color:        '#7A5C00',
+            lineHeight:   1,
+          }}>
+            🪙{coins}
+          </div>
           <ProgressRing
             progress={evoProgress}
             label={nextAge !== null ? `Next evolution at ${nextAge}m` : 'Max stage'}
@@ -519,6 +538,7 @@ export function PetScreen() {
             {/* Nav items */}
             <div className="side-menu__nav">
               {([
+                ['accessory',    '👗', 'Accessory Shop'],
                 ['inventory',    '📦', 'Inventory'],
                 ['achievements', '🏆', 'Achievements'],
                 ['settings',     '⚙️',  'Settings'],
@@ -530,6 +550,23 @@ export function PetScreen() {
                   onClick={() => { navigate(screen); setMenuOpen(false); }}
                 >
                   <span aria-hidden="true">{emoji}</span> {label}
+                  {screen === 'accessory' && (
+                    <span style={{
+                      marginLeft:   'auto',
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          3,
+                      fontFamily:   'var(--font-display)',
+                      fontSize:     '0.45rem',
+                      color:        '#7A5C00',
+                      background:   'rgba(255,215,0,0.2)',
+                      border:       '1.5px solid #E6A800',
+                      borderRadius: 'var(--radius-full)',
+                      padding:      '2px 6px',
+                    }}>
+                      🪙{coins}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -596,6 +633,7 @@ export function PetScreen() {
             onFoodConsumed={handleFoodConsumed}
             toyPos={toyPos}
             onToyConsumed={handleToyConsumed}
+            equippedAccessoryIds={equippedAccessoryIds}
           />
         </section>
 
