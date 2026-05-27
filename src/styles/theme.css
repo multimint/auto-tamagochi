@@ -1,56 +1,66 @@
-/* ── Pastel Theme (default) ── */
+/* ── Sanrio / Punirunes Theme (default) ── */
+/*
+  Palette derived from the Punirunes Sanrio device:
+  • Primary   — Sanrio hot pink  #FF6B9D  (brand pink / buttons)
+  • Accent    — Punirunes sky blue #7EC8E3 (device screen / banner)
+  • Surface   — cream-white       #FFFFFF  (device body)
+  • Text      — deep wine-plum    #3D1522  (high contrast on white)
+  • Danger    — coral-red         #FF7E90  (alert / sick)
+  • Success   — fresh mint        #78D898
+  • Lilac     — Kuromi soft purple used for sleep/dreamy states
+*/
 :root {
   /* Background */
-  --color-bg:            #FFF0F5;
-  --color-bg-alt:        #F5E6FF;
+  --color-bg:            #FFF5F8;   /* blush white — Punirunes device body */
+  --color-bg-alt:        #FFE8F2;   /* soft rose — alternating panels */
 
   /* Surfaces */
   --color-surface:       #FFFFFF;
-  --color-surface-alt:   #FDF0FF;
-  --color-surface-hover: #F3E8FF;
+  --color-surface-alt:   #FFF0F6;
+  --color-surface-hover: #FFE4ED;
 
   /* Borders */
-  --color-border:        #E8D5E8;
-  --color-border-focus:  #C084FC;
+  --color-border:        #F0B8CC;   /* rose border */
+  --color-border-focus:  #FF6B9D;   /* Sanrio pink focus ring */
 
   /* Text */
-  --color-text:          #3D2B3D;
-  --color-text-muted:    #8B6B8B;
+  --color-text:          #3D1522;   /* deep wine-plum */
+  --color-text-muted:    #A05870;   /* muted rose-mauve */
   --color-text-inverse:  #FFFFFF;
 
-  /* Primary (purple) */
-  --color-primary:       #C084FC;
-  --color-primary-hover: #A855F7;
-  --color-primary-active:#9333EA;
+  /* Primary — Sanrio hot pink */
+  --color-primary:       #FF6B9D;
+  --color-primary-hover: #E8527A;
+  --color-primary-active:#D43660;
 
-  /* Accent (pink) */
-  --color-accent:        #F9A8D4;
-  --color-accent-hover:  #F472B6;
+  /* Accent — Punirunes sky blue */
+  --color-accent:        #7EC8E3;
+  --color-accent-hover:  #5AB4D4;
 
   /* Semantic colors */
-  --color-success:       #86EFAC;
-  --color-success-bg:    #F0FDF4;
-  --color-warning:       #FDE68A;
-  --color-warning-bg:    #FFFBEB;
-  --color-danger:        #FCA5A5;
-  --color-danger-bg:     #FEF2F2;
-  --color-info:          #BAE6FD;
-  --color-info-bg:       #F0F9FF;
+  --color-success:       #78D898;
+  --color-success-bg:    #F0FBF4;
+  --color-warning:       #FFCC5C;
+  --color-warning-bg:    #FFFCE8;
+  --color-danger:        #FF7E90;
+  --color-danger-bg:     #FFF2F4;
+  --color-info:          #B8E4F7;
+  --color-info-bg:       #F0F8FF;
 
   /* Stat bar fill colors */
-  --stat-high:    #86EFAC;
-  --stat-mid:     #FDE68A;
-  --stat-low:     #FCA5A5;
-  --stat-zero:    #EF4444;
+  --stat-high:    #78D898;   /* mint green */
+  --stat-mid:     #FFCC5C;   /* warm yellow */
+  --stat-low:     #FF9BAA;   /* coral pink */
+  --stat-zero:    #E8344A;   /* alert red */
 
   /* Stage badge colors */
-  --stage-egg:    #E8D5FF;
-  --stage-baby:   #FFD6E7;
-  --stage-child:  #C8F7C5;
-  --stage-teen:   #A5D8FF;
-  --stage-adult:  #FFE4A1;
-  --stage-elder:  #FFD4A3;
-  --stage-dead:   #D1D5DB;
+  --stage-egg:    #FFD0E8;   /* light pink */
+  --stage-baby:   #FFB3D0;   /* pink */
+  --stage-child:  #B4EFC8;   /* mint */
+  --stage-teen:   #A8DCFF;   /* sky */
+  --stage-adult:  #FFE08C;   /* gold */
+  --stage-elder:  #FFCBA4;   /* peach */
+  --stage-dead:   #C8C8CC;   /* grey */
 
   /* Typography */
   --font-display: 'Press Start 2P', 'Courier New', monospace;
@@ -87,12 +97,12 @@
   --radius-xl:   28px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm:  0 1px 3px rgba(192,132,252,0.12), 0 1px 2px rgba(192,132,252,0.08);
-  --shadow-md:  0 4px 12px rgba(192,132,252,0.18), 0 2px 4px rgba(192,132,252,0.10);
-  --shadow-lg:  0 8px 24px rgba(192,132,252,0.22), 0 4px 8px rgba(192,132,252,0.12);
-  --shadow-inset: inset 0 2px 6px rgba(192,132,252,0.15);
-  --shadow-glow:  0 0 16px rgba(192,132,252,0.5);
+  /* Shadows — rose-tinted like the Sanrio device glow */
+  --shadow-sm:    0 1px 3px rgba(255,107,157,0.14), 0 1px 2px rgba(255,107,157,0.08);
+  --shadow-md:    0 4px 12px rgba(255,107,157,0.20), 0 2px 4px rgba(255,107,157,0.10);
+  --shadow-lg:    0 8px 24px rgba(255,107,157,0.25), 0 4px 8px rgba(255,107,157,0.12);
+  --shadow-inset: inset 0 2px 6px rgba(255,107,157,0.15);
+  --shadow-glow:  0 0 18px rgba(255,107,157,0.55);
 
   /* Transitions */
   --transition-fast:   100ms ease;
@@ -112,35 +122,50 @@
   --avatar-size-desktop: 220px;
 }
 
-/* ── Dark Theme ── */
+/* ── Sanrio Night (dark) ── */
+/*
+  Deep rose-black base, Sanrio pink stays vivid — like the device after lights out.
+*/
 [data-theme="dark"] {
-  --color-bg:            #1A0A1A;
-  --color-bg-alt:        #250F25;
-  --color-surface:       #2D1A2D;
-  --color-surface-alt:   #3D2B3D;
-  --color-surface-hover: #4A3A4A;
-  --color-border:        #5B3D5B;
-  --color-border-focus:  #C084FC;
-  --color-text:          #F3E8FF;
-  --color-text-muted:    #C084FC;
-  --color-text-inverse:  #1A0A1A;
-  --color-primary:       #A855F7;
-  --color-primary-hover: #9333EA;
-  --color-primary-active:#7C3AED;
-  --color-accent:        #F472B6;
-  --color-accent-hover:  #EC4899;
-  --color-success:       #4ADE80;
-  --color-success-bg:    #052E16;
-  --color-warning:       #FCD34D;
-  --color-warning-bg:    #1C1400;
-  --color-danger:        #F87171;
-  --color-danger-bg:     #1C0A0A;
-  --stat-high:           #4ADE80;
-  --stat-mid:            #FCD34D;
-  --stat-low:            #F87171;
-  --shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg:  0 8px 24px rgba(0,0,0,0.6);
+  --color-bg:            #1A0810;
+  --color-bg-alt:        #240D18;
+  --color-surface:       #2E1020;
+  --color-surface-alt:   #3C1828;
+  --color-surface-hover: #4A2035;
+  --color-border:        #6E2840;
+  --color-border-focus:  #FF6B9D;
+  --color-text:          #FFE8F2;
+  --color-text-muted:    #E07090;
+  --color-text-inverse:  #1A0810;
+  --color-primary:       #FF6B9D;
+  --color-primary-hover: #FF8FB5;
+  --color-primary-active:#FF4880;
+  --color-accent:        #7EC8E3;
+  --color-accent-hover:  #9ED8F0;
+  --color-success:       #4AD880;
+  --color-success-bg:    #051A10;
+  --color-warning:       #FFD050;
+  --color-warning-bg:    #1A1200;
+  --color-danger:        #FF8090;
+  --color-danger-bg:     #1A0810;
+  --color-info:          #7EC8E3;
+  --color-info-bg:       #071825;
+  --stat-high:           #4AD880;
+  --stat-mid:            #FFD050;
+  --stat-low:            #FF8090;
+  --stat-zero:           #FF3050;
+  --stage-egg:           #5A1A38;
+  --stage-baby:          #6E2048;
+  --stage-child:         #0D3020;
+  --stage-teen:          #0D2840;
+  --stage-adult:         #3A2808;
+  --stage-elder:         #3A2010;
+  --stage-dead:          #2A2A30;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.50);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.60);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,0.70);
+  --shadow-inset: inset 0 2px 6px rgba(0,0,0,0.40);
+  --shadow-glow:  0 0 18px rgba(255,107,157,0.45);
 }
 
 /* ── Classic Theme ── */

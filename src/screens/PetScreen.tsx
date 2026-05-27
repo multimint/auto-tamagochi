@@ -329,7 +329,7 @@ export function PetScreen() {
                 cooldownMs={cooldowns.FEED.remainingMs}
                 cooldownTotalMs={cooldowns.FEED.totalMs}
                 disabled={pet.stage === 'dead'}
-                accent="rgba(253,230,138,0.25)"
+                accent="rgba(255,204,92,0.28)"
               />
               <ActionButton
                 label="Play"
@@ -340,7 +340,7 @@ export function PetScreen() {
                 cooldownTotalMs={cooldowns.PLAY.totalMs}
                 disabled={pet.stage === 'dead' || pet.energy < 15}
                 ariaLabel={pet.energy < 15 ? 'Play (too tired)' : 'Play'}
-                accent="rgba(134,239,172,0.25)"
+                accent="rgba(120,216,152,0.28)"
               />
               <ActionButton
                 label="Clean"
@@ -350,14 +350,14 @@ export function PetScreen() {
                 cooldownMs={cooldowns.CLEAN.remainingMs}
                 cooldownTotalMs={cooldowns.CLEAN.totalMs}
                 disabled={pet.stage === 'dead'}
-                accent="rgba(186,230,253,0.25)"
+                accent="rgba(126,200,227,0.28)"
               />
               <ActionButton
                 label="Sleep"
                 icon={<SleepIcon size={24} />}
                 onClick={() => handleAction('SLEEP')}
                 disabled={pet.stage === 'dead'}
-                accent="rgba(192,132,252,0.20)"
+                accent="rgba(180,150,220,0.24)"
               />
               <ActionButton
                 label="Medicine"
@@ -368,7 +368,7 @@ export function PetScreen() {
                 cooldownTotalMs={cooldowns.MEDICINE.totalMs}
                 disabled={pet.stage === 'dead' || !pet.isSick}
                 ariaLabel={!pet.isSick ? 'Medicine (not sick)' : 'Give medicine'}
-                accent="rgba(252,165,165,0.25)"
+                accent="rgba(255,126,144,0.28)"
               />
               <ActionButton
                 label="Praise"
@@ -378,7 +378,7 @@ export function PetScreen() {
                 cooldownMs={cooldowns.PRAISE.remainingMs}
                 cooldownTotalMs={cooldowns.PRAISE.totalMs}
                 disabled={pet.stage === 'dead'}
-                accent="rgba(249,168,212,0.25)"
+                accent="rgba(255,107,157,0.28)"
               />
             </>
           ) : (
@@ -390,7 +390,7 @@ export function PetScreen() {
                 onClick={() => handleAction('WAKE')}
                 variant="secondary"
                 ariaLabel="Wake up your pet"
-                accent="rgba(192,132,252,0.20)"
+                accent="rgba(255,204,92,0.28)"
               />
             </div>
           )}

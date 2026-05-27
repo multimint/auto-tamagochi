@@ -52,14 +52,14 @@ export function HomeScreen() {
       {/* Floating pixel sparkles */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
         {[
-          { left: '10%',  top: '72%', size: 8,  delay: '0s',    dur: '3.5s', color: '#C084FC' },
-          { left: '25%',  top: '80%', size: 6,  delay: '0.7s',  dur: '4s',   color: '#F9A8D4' },
-          { left: '60%',  top: '75%', size: 10, delay: '1.2s',  dur: '3s',   color: '#C084FC' },
-          { left: '75%',  top: '65%', size: 6,  delay: '0.3s',  dur: '4.5s', color: '#F9A8D4' },
-          { left: '85%',  top: '85%', size: 8,  delay: '1.8s',  dur: '3.8s', color: '#EDD9FF' },
-          { left: '45%',  top: '88%', size: 5,  delay: '0.9s',  dur: '3.2s', color: '#C084FC' },
-          { left: '5%',   top: '55%', size: 7,  delay: '2.1s',  dur: '4.2s', color: '#F9A8D4' },
-          { left: '90%',  top: '60%', size: 6,  delay: '1.5s',  dur: '3.6s', color: '#EDD9FF' },
+          { left: '10%',  top: '72%', size: 8,  delay: '0s',    dur: '3.5s', color: '#FF6B9D' },
+          { left: '25%',  top: '80%', size: 6,  delay: '0.7s',  dur: '4s',   color: '#7EC8E3' },
+          { left: '60%',  top: '75%', size: 10, delay: '1.2s',  dur: '3s',   color: '#FF6B9D' },
+          { left: '75%',  top: '65%', size: 6,  delay: '0.3s',  dur: '4.5s', color: '#FFB3D0' },
+          { left: '85%',  top: '85%', size: 8,  delay: '1.8s',  dur: '3.8s', color: '#7EC8E3' },
+          { left: '45%',  top: '88%', size: 5,  delay: '0.9s',  dur: '3.2s', color: '#FF6B9D' },
+          { left: '5%',   top: '55%', size: 7,  delay: '2.1s',  dur: '4.2s', color: '#FFB3D0' },
+          { left: '90%',  top: '60%', size: 6,  delay: '1.5s',  dur: '3.6s', color: '#7EC8E3' },
         ].map((s, i) => (
           <div key={i} style={{
             position:       'absolute', left: s.left, top: s.top,
@@ -102,7 +102,7 @@ export function HomeScreen() {
           width:      isDesktop ? 190 : 145,
           height:     isDesktop ? 190 : 145,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(192,132,252,0.28) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(255,107,157,0.28) 0%, transparent 70%)',
           animation:  'pulse-soft 2.5s ease-in-out infinite',
         }} />
         <div style={{ width: isDesktop ? 160 : 120, height: isDesktop ? 160 : 120, position: 'relative', zIndex: 1 }}>

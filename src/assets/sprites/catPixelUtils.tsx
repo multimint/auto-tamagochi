@@ -1,7 +1,10 @@
 /**
- * Pixel-art cat sprite utilities — pastel theme edition.
+ * Pixel-art cat sprite utilities — Sanrio / Punirunes theme edition.
  * Grid: 16 cols × 17 rows, each pixel = P×P px, offset (OX, OY) inside a 120×120 viewBox.
- * Colours are drawn from the app's pastel design tokens.
+ * Colours align with the Sanrio Punirunes device palette:
+ *   primary  #FF6B9D  Sanrio hot pink
+ *   accent   #7EC8E3  Punirunes sky blue
+ *   text     #3D1522  deep wine
  */
 
 export const P  = 6;   // pixel size in SVG units
@@ -26,35 +29,35 @@ export function row(c: number, r: number, len: number, fill: string) {
   return <rect x={OX + c * P} y={OY + r * P} width={P * len} height={P} fill={fill} />;
 }
 
-// ── Pastel colour palettes (match app theme tokens) ────────────────────────
+// ── Sanrio / Punirunes colour palettes ────────────────────────────────────
 
 export const PALETTES = {
   egg: {
-    shell:    '#EDD9FF',   // pale lavender
-    shellDk:  '#C084FC',   // --color-primary
-    crack:    '#A855F7',
-    spot:     '#F9A8D4',   // --color-accent
-    earTip:   '#C084FC',
-    earInner: '#F9A8D4',
+    shell:    '#FFE0F0',   // light pink shell — Hello Kitty pink egg
+    shellDk:  '#FF9ABF',   // medium pink — --color-primary range
+    crack:    '#FF6B9D',   // Sanrio hot pink cracks
+    spot:     '#FFB3D0',   // soft pink spots
+    earTip:   '#FF9ABF',
+    earInner: '#FFB3D0',
   },
   baby: {
     fur:      '#FFD6E7',   // baby pink
     furDk:    '#F9A8D4',   // rose
-    belly:    '#FFF0F5',   // --color-bg
+    belly:    '#FFF5F8',   // --color-bg
     earTip:   '#FFD6E7',
-    earInner: '#C084FC',   // purple inner ears
+    earInner: '#FF9ABF',   // Sanrio pink inner ears
     stripe:   '#F472B6',
   },
   child: {
-    fur:      '#D4B8F0',   // soft lavender
-    furDk:    '#9B72CF',   // medium purple
-    belly:    '#EDE0FF',
-    earTip:   '#D4B8F0',
-    earInner: '#F9A8D4',
-    stripe:   '#8B5CF6',
+    fur:      '#D4B8E8',   // Kuromi soft lilac — Sanrio character stage
+    furDk:    '#9478C8',   // medium Kuromi lilac
+    belly:    '#EAE0F8',
+    earTip:   '#D4B8E8',
+    earInner: '#FFB3D0',
+    stripe:   '#8870C8',
   },
   teen: {
-    fur:      '#BAD9F7',   // pastel sky-blue
+    fur:      '#BAD9F7',   // Cinnamoroll sky-blue
     furDk:    '#7EB5E8',
     belly:    '#E8F4FF',
     earTip:   '#BAD9F7',
@@ -63,24 +66,24 @@ export const PALETTES = {
     tuxedo:   '#FFFFFF',
   },
   adult: {
-    fur:      '#F9A8D4',   // --color-accent (rose pink)
+    fur:      '#FF9ABF',   // Sanrio pink — --color-primary range
     furDk:    '#F472B6',   // deeper rose
-    belly:    '#FFF0F5',   // --color-bg
-    earTip:   '#F9A8D4',
-    earInner: '#C084FC',   // purple inner ears
-    stripe:   '#E879A4',
+    belly:    '#FFF5F8',   // --color-bg
+    earTip:   '#FF9ABF',
+    earInner: '#FFD0E8',   // light pink inner ears
+    stripe:   '#E8527A',
   },
   elder: {
-    fur:      '#E8E0F4',   // pale lilac
+    fur:      '#E8E0F4',   // pale silver-lilac
     furDk:    '#C0B4D8',
-    belly:    '#F8F4FF',
+    belly:    '#F8F5FF',
     earTip:   '#E8E0F4',
     earInner: '#FFD6E7',
     muzzle:   '#FFEEF8',
-    stripe:   '#B0A0CC',
+    stripe:   '#C0A8BC',
   },
   dead: {
-    fur:      '#C8C0D0',   // desaturated mauve
+    fur:      '#C8C0D0',   // desaturated
     furDk:    '#988898',
     belly:    '#E0D8E8',
     earTip:   '#C8C0D0',
@@ -89,22 +92,22 @@ export const PALETTES = {
   },
 } as const;
 
-// ── Shared facial / detail colours (pastel theme) ─────────────────────────
+// ── Shared facial / detail colours (Sanrio theme) ─────────────────────────
 
 export const C = {
-  eye:        '#2D1B4E',   // deep purple
-  pupilGreen: '#9B59B6',   // purple pupils (theme-matched)
-  pupilBlue:  '#7C3AED',
+  eye:        '#3D1522',   // deep wine (matches --color-text)
+  pupilGreen: '#5B9BD5',   // sky-blue pupils (Cinnamoroll-inspired)
+  pupilBlue:  '#3D6FB5',   // medium blue
   eyeShine:   '#FFFFFF',
-  nose:       '#F472B6',   // rose
-  mouth:      '#BE185D',   // deep rose
-  whisker:    '#C4B5D8',   // lavender whiskers
-  blush:      '#F9A8D4',   // --color-accent
-  shadow:     'rgba(192,132,252,0.18)',  // purple-tinted
+  nose:       '#FF6B9D',   // Sanrio pink nose
+  mouth:      '#C0304A',   // deep rose mouth
+  whisker:    '#D4B0C0',   // soft rose whiskers (matches room frames)
+  blush:      '#FF9ABF',   // Sanrio pink blush
+  shadow:     'rgba(255,107,157,0.18)',  // pink-tinted shadow
   halo:       '#FFD700',
-  zzz:        '#C084FC',   // --color-primary
-  sickGreen:  '#86EFAC',
-  tear:       '#93C5FD',
+  zzz:        '#7EC8E3',   // sky blue dream z's — Punirunes accent
+  sickGreen:  '#78D898',
+  tear:       '#7EC8E3',   // sky blue tear
 } as const;
 
 // ── Sick palette helper ────────────────────────────────────────────────────
