@@ -55,7 +55,7 @@ export function StatBar({ label, value, icon, isLow }: StatBarProps) {
       <div
         style={{
           flex: 1,
-          height: 12,
+          height: 14,
           background: 'var(--color-surface-alt)',
           borderRadius: 'var(--radius-full)',
           overflow: 'hidden',

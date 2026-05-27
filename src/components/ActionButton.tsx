@@ -10,6 +10,7 @@ interface ActionButtonProps {
   cooldownTotalMs?:  number;
   variant?:          'primary' | 'secondary' | 'danger';
   ariaLabel?:        string;
+  accent?:           string;  // per-action tint colour, e.g. 'rgba(134,239,172,0.22)'
 }
 
 interface Ripple {
@@ -28,6 +29,7 @@ export function ActionButton({
   cooldownTotalMs = 1,
   variant = 'primary',
   ariaLabel,
+  accent,
 }: ActionButtonProps) {
   const isBlocked = disabled || isOnCooldown;
   const cooldownPct = isOnCooldown ? (cooldownMs / cooldownTotalMs) * 100 : 0;
@@ -74,7 +76,7 @@ export function ActionButton({
         justifyContent:'center',
         gap:           'var(--space-1)',
         padding:       'var(--space-3) var(--space-2)',
-        background:    bgMap[variant],
+        background:    accent ?? bgMap[variant],
         border:        `2px solid ${borderMap[variant]}`,
         borderRadius:  'var(--radius-md)',
         cursor:        isBlocked ? 'not-allowed' : 'pointer',
@@ -127,8 +129,18 @@ export function ActionButton({
         />
       ))}
 
-      {/* Icon */}
-      <div style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+      {/* Icon — inside a soft tinted circle */}
+      <div style={{
+        width:          44,
+        height:         44,
+        borderRadius:   '50%',
+        background:     accent ?? 'var(--color-surface-alt)',
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        color:          'var(--color-primary)',
+        flexShrink:     0,
+      }}>
         {icon}
       </div>
 

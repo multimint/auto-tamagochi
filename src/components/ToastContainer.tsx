@@ -8,6 +8,7 @@ export function ToastContainer() {
 
   return (
     <div
+      className="toast-container"
       role="status"
       aria-live="polite"
       aria-atomic="false"

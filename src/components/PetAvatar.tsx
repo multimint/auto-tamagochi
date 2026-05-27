@@ -174,63 +174,81 @@ function RoomBackground() {
   return (
     <svg
       width="100%" height="100%"
-      viewBox="0 0 300 220"
+      viewBox="0 0 600 220"
       preserveAspectRatio="xMidYMid slice"
       xmlns="http://www.w3.org/2000/svg"
       shapeRendering="crispEdges"
       aria-hidden="true"
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}
     >
-      {/* ── WALL ── */}
-      <rect x="0" y="0" width="300" height="143" fill="#EDD9FF" />
+      {/* ── WALL (full 600px width) ── */}
+      <rect x="0" y="0" width="600" height="143" fill="#EDD9FF" />
       {/* subtle wall stripe pattern */}
-      {[0,30,60,90,120,150,180,210,240,270].map(x => (
+      {[0,30,60,90,120,150,180,210,240,270,300,330,360,390,420,450,480,510,540,570].map(x => (
         <rect key={x} x={x} y="0" width="2" height="143" fill="#E0C8F8" opacity="0.5" />
       ))}
 
-      {/* ── WINDOW (left side) ── */}
+      {/* ── WINDOW LEFT ── */}
       <rect x="18"  y="20" width="54" height="42" fill="#BAD9F7" />
       <rect x="18"  y="20" width="54" height="42" fill="none" stroke="#C4B5D8" strokeWidth="3" />
       <rect x="44"  y="20" width="2"  height="42" fill="#C4B5D8" />
       <rect x="18"  y="40" width="54" height="2"  fill="#C4B5D8" />
-      {/* window shine */}
       <rect x="20"  y="22" width="10" height="6"  fill="white" opacity="0.4" />
-      {/* curtain left */}
       <rect x="14"  y="16" width="10" height="52" fill="#F9A8D4" opacity="0.8" />
-      {/* curtain right */}
       <rect x="62"  y="16" width="10" height="52" fill="#F9A8D4" opacity="0.8" />
 
-      {/* ── PICTURE FRAME (right side) ── */}
-      <rect x="200" y="24" width="70" height="50" fill="#FFF0F5" stroke="#C4B5D8" strokeWidth="3" />
-      {/* pixel art cat face inside frame */}
-      <rect x="226" y="32" width="18" height="14" fill="#F9A8D4" />
-      <rect x="224" y="28" width="4"  height="6"  fill="#F9A8D4" />
-      <rect x="240" y="28" width="4"  height="6"  fill="#F9A8D4" />
-      <rect x="228" y="37" width="3"  height="3"  fill="#2D1B4E" />
-      <rect x="237" y="37" width="3"  height="3"  fill="#2D1B4E" />
-      <rect x="232" y="42" width="2"  height="2"  fill="#F472B6" />
-      {/* frame mat bottom */}
-      <rect x="205" y="66" width="60" height="4"  fill="#EDD9FF" />
+      {/* ── PICTURE FRAME (left-centre) ── */}
+      <rect x="160" y="24" width="70" height="50" fill="#FFF0F5" stroke="#C4B5D8" strokeWidth="3" />
+      <rect x="186" y="32" width="18" height="14" fill="#F9A8D4" />
+      <rect x="184" y="28" width="4"  height="6"  fill="#F9A8D4" />
+      <rect x="200" y="28" width="4"  height="6"  fill="#F9A8D4" />
+      <rect x="188" y="37" width="3"  height="3"  fill="#2D1B4E" />
+      <rect x="197" y="37" width="3"  height="3"  fill="#2D1B4E" />
+      <rect x="192" y="42" width="2"  height="2"  fill="#F472B6" />
+      <rect x="165" y="66" width="60" height="4"  fill="#EDD9FF" />
+
+      {/* ── SHELF / DECORATION (right-centre) ── */}
+      <rect x="330" y="68" width="90" height="6"  fill="#C4B5D8" />   {/* shelf board */}
+      <rect x="328" y="74" width="2"  height="20" fill="#B0A0CC" />   {/* left bracket */}
+      <rect x="418" y="74" width="2"  height="20" fill="#B0A0CC" />   {/* right bracket */}
+      {/* pot / plant */}
+      <rect x="342" y="48" width="16" height="20" fill="#A8D8C0" />   {/* leaves */}
+      <rect x="344" y="46" width="12" height="6"  fill="#86C4A8" />
+      <rect x="346" y="60" width="8"  height="12" fill="#E8C090" />   {/* pot */}
+      <rect x="344" y="68" width="12" height="4"  fill="#C8A070" />   {/* pot rim */}
+      {/* small round vase */}
+      <rect x="376" y="54" width="14" height="18" fill="#C084FC" opacity="0.7" />
+      <rect x="374" y="62" width="18" height="8"  fill="#C084FC" opacity="0.5" />
+      <rect x="378" y="52" width="10" height="4"  fill="#EDD9FF" />
+
+      {/* ── WINDOW RIGHT ── */}
+      <rect x="528" y="20" width="54" height="42" fill="#BAD9F7" />
+      <rect x="528" y="20" width="54" height="42" fill="none" stroke="#C4B5D8" strokeWidth="3" />
+      <rect x="554" y="20" width="2"  height="42" fill="#C4B5D8" />
+      <rect x="528" y="40" width="54" height="2"  fill="#C4B5D8" />
+      <rect x="530" y="22" width="10" height="6"  fill="white" opacity="0.4" />
+      <rect x="524" y="16" width="10" height="52" fill="#F9A8D4" opacity="0.8" />
+      <rect x="572" y="16" width="10" height="52" fill="#F9A8D4" opacity="0.8" />
 
       {/* ── BASEBOARD ── */}
-      <rect x="0" y="140" width="300" height="6"  fill="#C4B5D8" />
-      <rect x="0" y="146" width="300" height="3"  fill="#B0A0CC" />
+      <rect x="0" y="140" width="600" height="6"  fill="#C4B5D8" />
+      <rect x="0" y="146" width="600" height="3"  fill="#B0A0CC" />
 
       {/* ── FLOOR — 3 plank rows ── */}
-      <rect x="0" y="149" width="300" height="24" fill="#F0E8F8" />
-      <rect x="0" y="173" width="300" height="24" fill="#E8DCF4" />
-      <rect x="0" y="197" width="300" height="23" fill="#DDD0EE" />
+      <rect x="0" y="149" width="600" height="24" fill="#F0E8F8" />
+      <rect x="0" y="173" width="600" height="24" fill="#E8DCF4" />
+      <rect x="0" y="197" width="600" height="23" fill="#DDD0EE" />
       {/* plank dividers */}
-      {[0,50,110,170,230].map(x => (
+      {[0,60,130,200,270,340,410,480,550].map(x => (
         <rect key={x} x={x} y="149" width="1" height="71" fill="#C4B5D8" opacity="0.5" />
       ))}
       {/* plank row borders */}
-      <rect x="0" y="172" width="300" height="1" fill="#C4B5D8" opacity="0.4" />
-      <rect x="0" y="196" width="300" height="1" fill="#C4B5D8" opacity="0.4" />
+      <rect x="0" y="172" width="600" height="1" fill="#C4B5D8" opacity="0.4" />
+      <rect x="0" y="196" width="600" height="1" fill="#C4B5D8" opacity="0.4" />
 
-      {/* ── RUG ── */}
-      <ellipse cx="150" cy="205" rx="80" ry="12" fill="#C084FC" opacity="0.25" />
-      <ellipse cx="150" cy="205" rx="60" ry="8"  fill="#F9A8D4" opacity="0.20" />
+      {/* ── RUG (centered at 300) ── */}
+      <ellipse cx="300" cy="205" rx="130" ry="14" fill="#C084FC" opacity="0.22" />
+      <ellipse cx="300" cy="205" rx="100" ry="10" fill="#F9A8D4" opacity="0.18" />
     </svg>
   );
 }

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGame, useNavigate } from '@/context/GameContext';
 import { useToast } from '@/context/ToastContext';
 import { useCooldowns } from '@/hooks/useCooldowns';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { computeMood } from '@/utils/gameLogic';
 import { evolutionProgress, nextEvolutionAge, STAGE_LABELS } from '@/utils/evolutionLogic';
 import { formatAge } from '@/utils/timeUtils';
@@ -38,6 +39,8 @@ export function PetScreen() {
   const { addToast } = useToast();
   const cooldowns   = useCooldowns();
   const [menuOpen, setMenuOpen] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [statExpanded, setStatExpanded] = useState(true);
 
   // ── Sprite action animation ─────────────────────────────────
   const [activeAnimation, setActiveAnimation] = useState<string | null>(null);
@@ -187,12 +190,12 @@ export function PetScreen() {
       <header className="top-bar">
         <StageBadge stage={pet.stage} />
 
-        <div className="top-bar__title" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', justifyContent: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)' }}>
+        <div className="top-bar__title" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', justifyContent: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-xs)', lineHeight: 1.2 }}>
             {pet.name}
           </span>
-          <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>
-            · {formatAge(pet.ageMinutes)}
+          <span style={{ fontSize: '0.55rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', lineHeight: 1.2 }}>
+            {formatAge(pet.ageMinutes)}
           </span>
         </div>
 
@@ -208,7 +211,7 @@ export function PetScreen() {
             onClick={() => setMenuOpen(true)}
             aria-label="Open navigation menu"
             aria-expanded={menuOpen}
-            style={{ color: 'var(--color-text)', background: 'none', border: 'none', fontSize: 22, padding: 'var(--space-1)' }}
+            style={{ color: 'var(--color-text)', background: 'none', border: 'none', fontSize: 22 }}
           >
             ☰
           </button>
@@ -268,46 +271,8 @@ export function PetScreen() {
         <section className="avatar-section">
 
           {/* Status banners float above the walking cat */}
-          {pet.isSleeping && (
-            <div style={{
-              position:  'absolute',
-              top:       'var(--space-2)',
-              left:      '50%',
-              transform: 'translateX(-50%)',
-              zIndex:    3,
-              fontFamily:   'var(--font-body)',
-              fontSize:     'var(--font-size-sm)',
-              color:        'var(--color-text-muted)',
-              fontWeight:   'var(--font-weight-bold)',
-              background:   'var(--color-surface)',
-              borderRadius: 'var(--radius-full)',
-              padding:      '2px var(--space-3)',
-              boxShadow:    'var(--shadow-sm)',
-              whiteSpace:   'nowrap',
-            }}>
-              💤 Sleeping…
-            </div>
-          )}
-          {pet.isSick && (
-            <div style={{
-              position:  'absolute',
-              top:       'var(--space-2)',
-              left:      '50%',
-              transform: 'translateX(-50%)',
-              zIndex:    3,
-              fontFamily:   'var(--font-body)',
-              fontSize:     'var(--font-size-sm)',
-              color:        'var(--color-danger)',
-              fontWeight:   'var(--font-weight-bold)',
-              background:   'var(--color-surface)',
-              borderRadius: 'var(--radius-full)',
-              padding:      '2px var(--space-3)',
-              boxShadow:    'var(--shadow-sm)',
-              whiteSpace:   'nowrap',
-            }}>
-              🤒 Sick! Use medicine!
-            </div>
-          )}
+          {pet.isSleeping && <div className="status-banner">💤 Sleeping…</div>}
+          {pet.isSick     && <div className="status-banner status-banner--sick">🤒 Sick! Use medicine!</div>}
 
           <PetAvatar
             stage={pet.stage}
@@ -320,14 +285,37 @@ export function PetScreen() {
           />
         </section>
 
-        {/* Stat bars */}
-        <section className="stat-grid" aria-label="Pet statistics">
-          <StatBar label="Hunger"  value={pet.hunger}      icon={<HungerIcon size={16} />}      isLow={pet.hunger      <= WARNING} />
-          <StatBar label="Happy"   value={pet.happiness}   icon={<HappinessIcon size={16} />}   isLow={pet.happiness   <= WARNING} />
-          <StatBar label="Energy"  value={pet.energy}      icon={<EnergyIcon size={16} />}      isLow={pet.energy      <= WARNING} />
-          <StatBar label="Clean"   value={pet.cleanliness} icon={<CleanlinessIcon size={16} />} isLow={pet.cleanliness <= WARNING} />
-          <StatBar label="Health"  value={pet.health}      icon={<HealthIcon size={16} />}      isLow={pet.health      <= WARNING} />
-        </section>
+        {/* Stat bars — inside a collapsible tinted card */}
+        <div className="stat-card">
+          {/* Header — tap to collapse on mobile */}
+          <button
+            className="stat-card__header stat-card__toggle"
+            onClick={() => !isDesktop && setStatExpanded(v => !v)}
+            aria-expanded={statExpanded}
+            aria-controls="stat-grid-body"
+            style={{ cursor: isDesktop ? 'default' : 'pointer' }}
+          >
+            <span>STATS</span>
+            {/* Chevron — only visible on mobile */}
+            <span className={`stat-card__chevron${statExpanded ? ' stat-card__chevron--open' : ''}`} aria-hidden="true">
+              ▾
+            </span>
+          </button>
+
+          {/* Collapsible body */}
+          <div
+            id="stat-grid-body"
+            className={`stat-card__body${statExpanded ? ' stat-card__body--open' : ''}`}
+          >
+            <section className="stat-grid" aria-label="Pet statistics">
+              <StatBar label="Hunger"  value={pet.hunger}      icon={<HungerIcon size={16} />}      isLow={pet.hunger      <= WARNING} />
+              <StatBar label="Happy"   value={pet.happiness}   icon={<HappinessIcon size={16} />}   isLow={pet.happiness   <= WARNING} />
+              <StatBar label="Energy"  value={pet.energy}      icon={<EnergyIcon size={16} />}      isLow={pet.energy      <= WARNING} />
+              <StatBar label="Clean"   value={pet.cleanliness} icon={<CleanlinessIcon size={16} />} isLow={pet.cleanliness <= WARNING} />
+              <StatBar label="Health"  value={pet.health}      icon={<HealthIcon size={16} />}      isLow={pet.health      <= WARNING} />
+            </section>
+          </div>
+        </div>
 
         {/* Action buttons */}
         <section className="action-grid" aria-label="Pet actions">
@@ -341,6 +329,7 @@ export function PetScreen() {
                 cooldownMs={cooldowns.FEED.remainingMs}
                 cooldownTotalMs={cooldowns.FEED.totalMs}
                 disabled={pet.stage === 'dead'}
+                accent="rgba(253,230,138,0.25)"
               />
               <ActionButton
                 label="Play"
@@ -351,6 +340,7 @@ export function PetScreen() {
                 cooldownTotalMs={cooldowns.PLAY.totalMs}
                 disabled={pet.stage === 'dead' || pet.energy < 15}
                 ariaLabel={pet.energy < 15 ? 'Play (too tired)' : 'Play'}
+                accent="rgba(134,239,172,0.25)"
               />
               <ActionButton
                 label="Clean"
@@ -360,12 +350,14 @@ export function PetScreen() {
                 cooldownMs={cooldowns.CLEAN.remainingMs}
                 cooldownTotalMs={cooldowns.CLEAN.totalMs}
                 disabled={pet.stage === 'dead'}
+                accent="rgba(186,230,253,0.25)"
               />
               <ActionButton
                 label="Sleep"
                 icon={<SleepIcon size={24} />}
                 onClick={() => handleAction('SLEEP')}
                 disabled={pet.stage === 'dead'}
+                accent="rgba(192,132,252,0.20)"
               />
               <ActionButton
                 label="Medicine"
@@ -376,6 +368,7 @@ export function PetScreen() {
                 cooldownTotalMs={cooldowns.MEDICINE.totalMs}
                 disabled={pet.stage === 'dead' || !pet.isSick}
                 ariaLabel={!pet.isSick ? 'Medicine (not sick)' : 'Give medicine'}
+                accent="rgba(252,165,165,0.25)"
               />
               <ActionButton
                 label="Praise"
@@ -385,6 +378,7 @@ export function PetScreen() {
                 cooldownMs={cooldowns.PRAISE.remainingMs}
                 cooldownTotalMs={cooldowns.PRAISE.totalMs}
                 disabled={pet.stage === 'dead'}
+                accent="rgba(249,168,212,0.25)"
               />
             </>
           ) : (
@@ -396,6 +390,7 @@ export function PetScreen() {
                 onClick={() => handleAction('WAKE')}
                 variant="secondary"
                 ariaLabel="Wake up your pet"
+                accent="rgba(192,132,252,0.20)"
               />
             </div>
           )}

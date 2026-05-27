@@ -1,5 +1,10 @@
 /* ── Keyframe Definitions ── */
 
+@keyframes sparkle-drift {
+  0%   { transform: translateY(0)     rotate(0deg);   opacity: 0.75; }
+  100% { transform: translateY(-90px) rotate(180deg); opacity: 0;    }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-10px); }

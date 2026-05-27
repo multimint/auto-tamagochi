@@ -47,15 +47,41 @@ export function HomeScreen() {
   }
 
   return (
-    <main className="home-screen" style={{ background: 'var(--color-bg)' }}>
+    <main className="home-screen" style={{ background: 'var(--color-bg)', position: 'relative' }}>
+
+      {/* Floating pixel sparkles */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        {[
+          { left: '10%',  top: '72%', size: 8,  delay: '0s',    dur: '3.5s', color: '#C084FC' },
+          { left: '25%',  top: '80%', size: 6,  delay: '0.7s',  dur: '4s',   color: '#F9A8D4' },
+          { left: '60%',  top: '75%', size: 10, delay: '1.2s',  dur: '3s',   color: '#C084FC' },
+          { left: '75%',  top: '65%', size: 6,  delay: '0.3s',  dur: '4.5s', color: '#F9A8D4' },
+          { left: '85%',  top: '85%', size: 8,  delay: '1.8s',  dur: '3.8s', color: '#EDD9FF' },
+          { left: '45%',  top: '88%', size: 5,  delay: '0.9s',  dur: '3.2s', color: '#C084FC' },
+          { left: '5%',   top: '55%', size: 7,  delay: '2.1s',  dur: '4.2s', color: '#F9A8D4' },
+          { left: '90%',  top: '60%', size: 6,  delay: '1.5s',  dur: '3.6s', color: '#EDD9FF' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            position:       'absolute', left: s.left, top: s.top,
+            width:          s.size, height: s.size, borderRadius: 2,
+            background:     s.color, transform: 'rotate(45deg)',
+            animation:      `sparkle-drift ${s.dur} ease-out infinite`,
+            animationDelay: s.delay,
+          }} />
+        ))}
+      </div>
+
       {/* Title */}
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <h1 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize:   'clamp(0.6rem, 4vw, 1rem)',
-          color:      'var(--color-primary)',
-          lineHeight: 1.6,
-          marginBottom: 'var(--space-2)',
+          fontFamily:          'var(--font-display)',
+          fontSize:            'clamp(0.6rem, 4vw, 1rem)',
+          lineHeight:          1.6,
+          marginBottom:        'var(--space-2)',
+          background:          'linear-gradient(135deg, var(--color-primary), var(--color-accent))',
+          WebkitBackgroundClip:'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip:      'text',
         }}>
           🥚 TAMAGOTCHI 🥚
         </h1>
@@ -68,13 +94,37 @@ export function HomeScreen() {
         </p>
       </div>
 
-      {/* Egg animation */}
-      <div style={{ width: 160, height: 160 }}>
-        <EggSprite mood="happy" className="anim-idle" style={{ width: '100%', height: '100%' }} />
+      {/* Egg animation with glow */}
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+        {/* Pulsing radial glow ring */}
+        <div style={{
+          position:   'absolute',
+          width:      isDesktop ? 190 : 145,
+          height:     isDesktop ? 190 : 145,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(192,132,252,0.28) 0%, transparent 70%)',
+          animation:  'pulse-soft 2.5s ease-in-out infinite',
+        }} />
+        <div style={{ width: isDesktop ? 160 : 120, height: isDesktop ? 160 : 120, position: 'relative', zIndex: 1 }}>
+          <EggSprite mood="happy" className="anim-idle" style={{ width: '100%', height: '100%' }} />
+        </div>
       </div>
 
-      {/* Name input */}
-      <div style={{ width: '100%', maxWidth: formMaxWidth }}>
+      {/* Name input card */}
+      <div style={{
+        width:         '100%',
+        maxWidth:      formMaxWidth,
+        background:    'var(--color-surface)',
+        borderRadius:  'var(--radius-lg)',
+        border:        '1.5px solid var(--color-border)',
+        padding:       isDesktop ? 'var(--space-4)' : 'var(--space-3)',
+        boxShadow:     'var(--shadow-sm)',
+        display:       'flex',
+        flexDirection: 'column',
+        gap:           'var(--space-2)',
+        position:      'relative',
+        zIndex:        1,
+      }}>
         <label
           htmlFor="pet-name-input"
           style={{
@@ -83,7 +133,6 @@ export function HomeScreen() {
             fontSize:   'var(--font-size-sm)',
             fontWeight: 'var(--font-weight-bold)',
             color:      'var(--color-text)',
-            marginBottom: 'var(--space-2)',
           }}
         >
           Name your pet:
@@ -114,51 +163,29 @@ export function HomeScreen() {
         )}
       </div>
 
-      {/* Start button */}
+      {/* Start button — gradient */}
       <button
         onClick={handleStart}
         disabled={!petName.trim()}
-        style={{
-          width:        '100%',
-          maxWidth:     formMaxWidth,
-          padding:      'var(--space-4)',
-          background:   petName.trim() ? 'var(--color-primary)' : 'var(--color-border)',
-          color:        'var(--color-text-inverse)',
-          borderRadius: 'var(--radius-lg)',
-          fontSize:     'var(--font-size-base)',
-          fontWeight:   'var(--font-weight-black)',
-          fontFamily:   'var(--font-body)',
-          boxShadow:    petName.trim() ? 'var(--shadow-md)' : 'none',
-          transition:   'background var(--transition-fast), box-shadow var(--transition-fast)',
-          border:       'none',
-        }}
+        className="btn-primary"
+        style={{ maxWidth: formMaxWidth, position: 'relative', zIndex: 1 }}
       >
         🎮 Start New Game
       </button>
 
-      {/* Continue existing save */}
+      {/* Continue existing save — ghost */}
       {existingSave && existingSave.pet.name && (
         <button
           onClick={handleContinue}
-          style={{
-            width:        '100%',
-            maxWidth:     formMaxWidth,
-            padding:      'var(--space-3)',
-            background:   'var(--color-surface)',
-            color:        'var(--color-text)',
-            borderRadius: 'var(--radius-lg)',
-            fontSize:     'var(--font-size-sm)',
-            fontWeight:   'var(--font-weight-bold)',
-            fontFamily:   'var(--font-body)',
-            border:       '2px solid var(--color-border)',
-          }}
+          className="btn-ghost"
+          style={{ maxWidth: formMaxWidth, position: 'relative', zIndex: 1 }}
         >
           📂 Continue with {existingSave.pet.name} ({existingSave.pet.stage})
         </button>
       )}
 
       {/* Version */}
-      <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>
+      <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', position: 'relative', zIndex: 1 }}>
         v1.0.0
       </p>
     </main>
