@@ -16,6 +16,21 @@ interface PetAvatarProps {
   onEvolutionEnd?:   () => void;
   petName:           string;
   activeAnimation?:  string | null;
+  /** Text the pet says — rendered as a speech cloud above the sprite */
+  speechMessage?:    string | null;
+  /** Increment to force the bubble animation to replay on new messages */
+  speechMessageKey?: number;
+  /** Called when player clicks / taps the pet sprite */
+  onPetClick?:       () => void;
+}
+
+/** A floating heart / sparkle that pops on click */
+interface ClickParticle {
+  id:    number;
+  x:     number;   // % within wrapper
+  y:     number;   // % within wrapper
+  emoji: string;
+  delay: number;   // animation-delay in seconds
 }
 
 interface WalkPos { x: number; y: number }
@@ -168,6 +183,71 @@ function MedicineOverlay() {
   );
 }
 
+/* ── Pet speech bubble ── */
+
+function SpeechBubble({ text, facingLeft }: { text: string; facingLeft: boolean }) {
+  return (
+    <div
+      style={{
+        position:      'absolute',
+        bottom:        '112%',
+        left:          '50%',
+        /* counter the parent scaleX(-1) so text stays readable */
+        transform:     `translateX(-50%) scaleX(${facingLeft ? -1 : 1})`,
+        pointerEvents: 'none',
+        zIndex:        10,
+      }}
+    >
+      {/* Bubble body */}
+      <div style={{
+        position:     'relative',
+        background:   'rgba(255,255,255,0.97)',
+        border:       '2px solid #FF6B9D',
+        borderRadius: 10,
+        padding:      '5px 10px',
+        maxWidth:     160,
+        minWidth:     60,
+        textAlign:    'center',
+        fontSize:     '0.65rem',
+        fontFamily:   'var(--font-body)',
+        fontWeight:   700,
+        color:        '#3D1522',
+        lineHeight:   1.4,
+        whiteSpace:   'normal',
+        wordBreak:    'break-word',
+        boxShadow:    '0 3px 12px rgba(255,107,157,0.30)',
+        animation:    'pet-speech-in 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards',
+      }}>
+        {text}
+        {/* Triangle tail — outer border colour */}
+        <div style={{
+          position:    'absolute',
+          bottom:      -10,
+          left:        '50%',
+          transform:   'translateX(-50%)',
+          width:       0,
+          height:      0,
+          borderLeft:  '8px solid transparent',
+          borderRight: '8px solid transparent',
+          borderTop:   '10px solid #FF6B9D',
+        }} />
+        {/* Triangle tail — inner fill colour */}
+        <div style={{
+          position:    'absolute',
+          bottom:      -7,
+          left:        '50%',
+          transform:   'translateX(-50%)',
+          width:       0,
+          height:      0,
+          borderLeft:  '6px solid transparent',
+          borderRight: '6px solid transparent',
+          borderTop:   '7px solid rgba(255,255,255,0.97)',
+        }} />
+      </div>
+    </div>
+  );
+}
+
 /* ── Room background ── */
 
 function RoomBackground() {
@@ -263,6 +343,8 @@ const IDLE_MAX_MS           = 3800;
 
 /* ── Main component ── */
 
+const CLICK_EMOJIS = ['♥', '⭐', '✨', '💕', '♥', '🌟', '💖'];
+
 export function PetAvatar({
   stage,
   mood,
@@ -270,11 +352,53 @@ export function PetAvatar({
   onEvolutionEnd,
   petName,
   activeAnimation,
+  speechMessage,
+  speechMessageKey,
+  onPetClick,
 }: PetAvatarProps) {
   const Sprite     = SPRITE_MAP[stage] ?? BabySprite;
   const baseClass  = getAnimClass(mood, pendingEvolution, activeAnimation);
   const isDead     = mood === 'dead';
   const isSleeping = mood === 'sleeping';
+
+  /* ── Click particle state ── */
+  const [clickParticles, setClickParticles] = useState<ClickParticle[]>([]);
+  const particleIdRef = useRef(0);
+
+  /* ── Petting bounce state — adds .anim-petting to the wrapper briefly ── */
+  const [isPetting, setIsPetting] = useState(false);
+  const petBounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const handleWrapperClick = useCallback(() => {
+    if (isDead) return;
+
+    // Notify parent (dialog + stat boost logic lives there)
+    onPetClick?.();
+
+    // Spawn 3–5 heart/emoji particles at random positions in the upper body area
+    const count = 3 + Math.floor(Math.random() * 3);
+    const newParticles: ClickParticle[] = Array.from({ length: count }, (_, i) => ({
+      id:    ++particleIdRef.current,
+      x:     15 + Math.random() * 70,   // 15–85% horizontal spread
+      y:     10 + Math.random() * 55,   // 10–65% — head/body region
+      emoji: CLICK_EMOJIS[Math.floor(Math.random() * CLICK_EMOJIS.length)],
+      delay: i * 0.07,
+    }));
+    setClickParticles(prev => [...prev, ...newParticles]);
+
+    // Remove particles after animation (~900 ms + max delay)
+    setTimeout(() => {
+      const ids = new Set(newParticles.map(p => p.id));
+      setClickParticles(prev => prev.filter(p => !ids.has(p.id)));
+    }, 950);
+
+    // Trigger brief bounce animation on the wrapper
+    clearTimeout(petBounceTimer.current);
+    setIsPetting(true);
+    petBounceTimer.current = setTimeout(() => setIsPetting(false), 420);
+  }, [isDead, onPetClick]);
+
+  useEffect(() => () => clearTimeout(petBounceTimer.current), []);
 
   /* ── Walking state ── */
   const [walkPos,    setWalkPos]    = useState<WalkPos>({ x: 50, y: 70 });
@@ -369,9 +493,12 @@ export function PetAvatar({
       {/* Room background — renders behind the cat */}
       <RoomBackground />
 
-      {/* Cat walker — absolutely positioned, CSS transition does the movement */}
+      {/* Cat walker — absolutely positioned, CSS transition does the movement.
+          ⚠️  ONLY handles left/top/scale/flip transforms — never apply a CSS
+          animation that uses `transform` here, it would override all of these. */}
       <div
         className="pet-avatar-wrapper"
+        onClick={handleWrapperClick}
         style={{
           position:        'absolute',
           left:            `${walkPos.x}%`,
@@ -383,9 +510,17 @@ export function PetAvatar({
           transition:      isWalking
             ? `left ${WALK_MS}ms linear, top ${WALK_MS}ms linear`
             : 'left 0.4s ease-out, top 0.4s ease-out',
+          cursor:          isDead ? 'default' : 'pointer',
           /* width / height come from .pet-avatar-wrapper in CSS */
         }}
       >
+        {/* Inner bounce shell — bounce animation lives here so it never touches
+            the outer wrapper's positioning transforms. */}
+        <div
+          className={isPetting ? 'anim-petting' : undefined}
+          style={{ position: 'relative', width: '100%', height: '100%' }}
+        >
+
         {/* Mood glow aura */}
         <div
           className="avatar-mood-glow"
@@ -405,6 +540,15 @@ export function PetAvatar({
         {activeAnimation === 'grooming' && <GroomingOverlay />}
         {activeAnimation === 'praising' && <PraisingOverlay />}
         {activeAnimation === 'medicine' && <MedicineOverlay />}
+
+        {/* Speech bubble — floats above the pet, key forces animation replay */}
+        {speechMessage && (
+          <SpeechBubble
+            key={speechMessageKey}
+            text={speechMessage}
+            facingLeft={facingLeft}
+          />
+        )}
 
         {/* Evolution sparkles */}
         {showSparkles && (
@@ -431,7 +575,33 @@ export function PetAvatar({
             ))}
           </>
         )}
-      </div>
+
+        {/* Click / petting heart particles — float up and fade on each tap */}
+        {clickParticles.map(p => (
+          <div
+            key={p.id}
+            style={{
+              position:      'absolute',
+              left:          `${p.x}%`,
+              top:           `${p.y}%`,
+              fontSize:      `${13 + Math.random() * 6}px`,
+              lineHeight:    1,
+              pointerEvents: 'none',
+              userSelect:    'none',
+              zIndex:        20,
+              /* counter-mirror so hearts face the same way regardless of pet direction */
+              transform:     `scaleX(${facingLeft ? -1 : 1})`,
+              animation:     `heart-pop-up 0.85s ease-out forwards`,
+              animationDelay:`${p.delay}s`,
+              opacity:       0,
+            }}
+          >
+            {p.emoji}
+          </div>
+        ))}
+
+        </div>{/* end inner bounce shell */}
+      </div>{/* end pet-avatar-wrapper */}
     </div>
   );
 }

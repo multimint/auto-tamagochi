@@ -10,6 +10,7 @@ export type GameAction =
   | { type: 'WAKE' }
   | { type: 'MEDICINE' }
   | { type: 'PRAISE' }
+  | { type: 'PET' }
   | { type: 'USE_ITEM'; payload: { itemId: string } }
   | { type: 'EVOLVE'; payload: { toStage: PetStage } }
   | { type: 'DIE' }

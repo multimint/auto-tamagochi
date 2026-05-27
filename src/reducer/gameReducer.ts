@@ -142,6 +142,16 @@ export function gameReducer(state: FullState, action: GameAction): FullState {
       return { ...state, save: newSave };
     }
 
+    // ── PET (tap/click on the sprite) ─────────────────────────────────────────
+    case 'PET': {
+      if (pet.stage === 'dead' || pet.isSleeping) return state;
+      // Small happiness nudge (+3) — player-driven, cooldown enforced in UI
+      const newPet = { ...addStats(pet, { happiness: 3 }), updatedAt: nowMs() };
+      const newSave = { ...save, pet: newPet };
+      writeSave(newSave);
+      return { ...state, save: newSave };
+    }
+
     // ── USE_ITEM ──────────────────────────────────────────────────────────────
     case 'USE_ITEM': {
       const { itemId } = action.payload;

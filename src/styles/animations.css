@@ -302,6 +302,19 @@
   100% { transform: translateY(-36px) scale(0.4);  opacity: 0; }
 }
 
+/* Pet speech / thinking cloud pop-in */
+@keyframes pet-speech-in {
+  0%   { transform: scale(0.55) translateY(8px); opacity: 0; }
+  70%  { transform: scale(1.06) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1)    translateY(0);   opacity: 1; }
+}
+
+/* Pet speech pop-out (used via class swap) */
+@keyframes pet-speech-out {
+  from { transform: scale(1)    translateY(0);   opacity: 1; }
+  to   { transform: scale(0.55) translateY(8px); opacity: 0; }
+}
+
 /* ══════════════════════════════════════════════════════════════
    CAT SUB-ELEMENT ALWAYS-ON ANIMATIONS
    Applied via className on SVG <g> groups inside each sprite
@@ -383,6 +396,30 @@
 /* MEDICINE: head nods */
 .anim-medicine .cat-head { animation: cat-medicine-head 0.85s ease-in-out 2 forwards; }
 
+/* ── Pet click / petting keyframes ── */
+
+/* Heart/emoji particle that pops up and drifts away on pet click */
+@keyframes heart-pop-up {
+  0%   { transform: translateY(0)     scale(0.4) rotate(-10deg); opacity: 1; }
+  40%  { transform: translateY(-22px) scale(1.3) rotate(8deg);  opacity: 1; }
+  100% { transform: translateY(-56px) scale(0.7) rotate(-5deg); opacity: 0; }
+}
+
+/* Quick body bounce when the pet is tapped */
+@keyframes cat-pet-bounce {
+  0%   { transform: scale(1)    translateY(0); }
+  30%  { transform: scale(1.14) translateY(-6px); }
+  60%  { transform: scale(0.94) translateY(2px); }
+  80%  { transform: scale(1.04) translateY(-2px); }
+  100% { transform: scale(1)    translateY(0); }
+}
+
+/* Ripple ring that expands from click origin */
+@keyframes pet-click-ripple {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.7; }
+  100% { transform: translate(-50%,-50%) scale(2.8); opacity: 0; }
+}
+
 /* ── Utility Classes ── */
 
 .anim-idle      { animation: cat-idle-sway 3.5s ease-in-out infinite; }
@@ -398,3 +435,4 @@
 .anim-fade-in   { animation: fade-in      200ms ease-out; }
 .anim-fade-out  { animation: fade-out     300ms ease forwards; }
 .anim-modal-in  { animation: modal-in     250ms cubic-bezier(0.34,1.56,0.64,1); }
+.anim-petting   { animation: cat-pet-bounce 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards; }

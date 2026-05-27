@@ -33,6 +33,128 @@ import { PraiseIcon }      from '@/assets/icons/PraiseIcon';
 
 const WARNING = 20;
 
+/* ── Dialog pools ──────────────────────────────────────────────────────────── */
+
+/** Random things the pet says when tapped (no happiness boost). */
+const CLICK_DIALOGS: Record<string, string[]> = {
+  happy:    [
+    "Purr~ ♥", "I love you! ♥", "Yay! ✨", "Wheee! ⭐",
+    "Nyaa~! 🐱", "Teehee! ✨", "I'm so happy! 💕", "Best day ever! 🌟",
+    "Chirp chirp! 🎵", "So much energy! 🌈",
+  ],
+  neutral:  [
+    "Hmm? 👀", "*blinks*", "Mrrp~", "What's up? 😸",
+    "...", "Oh! 😮", "*flicks tail*", "Nyaa?", "Sniff sniff~ 👃",
+    "Just chilling 😌",
+  ],
+  sad:      [
+    "*sniff*... 😢", "I'm lonely...", "Mew... 😿",
+    "Please cheer me up! 💔", "I need love... 🥺",
+    "Nobody plays with me... 😔",
+  ],
+  sick:     [
+    "I don't feel well... 🤒", "*cough* 😷",
+    "I need medicine... 💊", "Ugh... 🥴",
+  ],
+  sleeping: [
+    "Zzz... 💤", "*doesn't wake up*", "Mmm... 😴",
+    "*shifts position*", "Shhh... 🌙",
+  ],
+};
+
+/** Special dialogs used when petting actually gives a happiness boost. */
+const PET_BOOST_DIALOGS = [
+  "Purrrr... ♥♥♥", "That feels nice! 💕", "More please! 🥰",
+  "You're the best! ♥", "*happy kneading* ♥", "Ehehe~ 💖",
+  "I love pets! ✨", "Nuzzle nuzzle~ ♥", "Don't stop! 🥰",
+  "*purrs loudly* 💗",
+];
+
+/** Dialogs for each player action and each blocked/guard state. */
+const ACTION_DIALOGS = {
+  /* ── Feed ─────────────────────── */
+  feed: [
+    "Yum! 🍎", "Nom nom nom! 😋", "More please! 🥺",
+    "So delicious! 🍕", "*munch munch* 😋", "Yummy in my tummy! 🍔",
+    "This is amazing! ✨", "I was SO hungry! 🍽️", "Best meal ever! 🌟",
+    "Can I have seconds? 🥣",
+  ],
+  feedFull: [
+    "I'm not hungry yet! 😌", "Maybe later... 🙄",
+    "I'm still full~ 🤭", "No thanks! 😊", "Ask me again later 🍃",
+  ],
+  /* ── Play ─────────────────────── */
+  play: [
+    "That was fun! ⭐", "Again! Again! 🎮", "Wheee! 🌟",
+    "I love playing! 💫", "Let's do that again! ⭐", "So fun! 🎉",
+    "*bounces excitedly* 🎊", "Yay! More games! 🕹️",
+    "I'm the champion! 🏆", "Catch me if you can! 🐾",
+  ],
+  playTired: [
+    "Too tired to play! 😴", "Let me rest first... 💤",
+    "I need a nap first... 😮‍💨", "No energy... 😓", "Zzzz... later? 💤",
+  ],
+  /* ── Clean ────────────────────── */
+  clean: [
+    "All clean! 🫧", "Squeaky clean! ✨", "I feel so fresh! 🛁",
+    "Mmm, I smell nice now! 🌸", "*shakes water off* 🚿",
+    "Spick and span! 🧼", "So sparkly! ✨", "Ahh, much better! 🌼",
+    "I love bath time! 🛁", "Fresh as a daisy! 🌷",
+  ],
+  /* ── Sleep ────────────────────── */
+  sleep: [
+    "Sweet dreams… 💤", "Nighty night~ 🌙", "Zzz... 😴",
+    "Time to rest... 💤", "*yawns* 🌙", "Good night! 🌠",
+    "Don't wake me up! 😴", "Counting sheep... 🐑",
+  ],
+  /* ── Wake ─────────────────────── */
+  wake: [
+    "Good morning! ☀️", "Rise and shine! 🌅", "Ready for the day! 🌞",
+    "*stretches* ☀️", "Time to have fun! ✨", "Feeling refreshed! 💪",
+    "I'm wide awake! 👀", "What are we doing today? 🌈",
+  ],
+  /* ── Medicine ─────────────────── */
+  medicine: [
+    "Feeling better! 💊", "That really helped! 🩺", "I feel much better! ✨",
+    "*cough* ...thanks 😮‍💨", "The medicine worked! 💊",
+    "All better now! 🌟", "Back to full health! 💪",
+  ],
+  medicineHealthy: [
+    "I'm not sick! 😊", "I feel totally fine! 💪",
+    "Save it for later~ 😊", "No medicine needed! ✨",
+  ],
+  /* ── Praise ───────────────────── */
+  praise: [
+    "Thanks! I feel special! ⭐", "You're so nice! 💕",
+    "*blushes* 😊", "I'm the best! 🌟", "Aww, thank you! 💖",
+    "More praise please! 😊", "*happy spin* ⭐",
+    "I feel so loved! 💕", "You always know what to say! 🌸",
+    "I'll never forget this! 🌟",
+  ],
+  /* ── Shared blocker ───────────── */
+  sleeping: [
+    "Zzz… Let me sleep! 😴", "Shh... I'm sleeping! 🌙",
+    "Not now... 💤", "*doesn't stir* 😴", "Talk to me later~ 🌙",
+  ],
+};
+
+/** Pools for the low-stat alert speech bubble. */
+const ALERT_DIALOGS = {
+  hunger:      ["I'm hungry! 🍔", "Feed me please! 🥺", "My tummy is growling! 🍽️", "I need food! 🍎"],
+  happiness:   ["I want to play! ⭐", "I'm bored... 😑", "Entertain me! 🎮", "I need fun! 🎉"],
+  energy:      ["I'm so sleepy… 😴", "I need a nap... 💤", "So tired... 😮‍💨", "Can I sleep? 🌙"],
+  cleanliness: ["I'm dirty! 🫧", "I smell bad... 😅", "Gimme a bath! 🛁", "I'm so grimy! 😖"],
+  health:      ["I don't feel well! ❤️", "I feel weak... 😔", "Something's wrong... 💔", "Help me! ❤️"],
+  sick:        ["I'm sick! 🤒", "I need medicine! 💊", "I feel awful... 🤢", "Cough cough... 😷"],
+  hunger0:     ["I'm starving! 😭", "Please feed me!! 😭", "I'm so hungry... 💔", "I might faint! 😵"],
+};
+
+const PET_COOLDOWN_MS = 8_000;   // 8 s between happiness boosts from petting
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export function PetScreen() {
   const { state, dispatch, pet, settings, achievements } = useGame();
   const navigate    = useNavigate();
@@ -41,6 +163,46 @@ export function PetScreen() {
   const [menuOpen, setMenuOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const [statExpanded, setStatExpanded] = useState(true);
+
+  // ── Pet speech bubble ────────────────────────────────────────
+  const [petSpeech,    setPetSpeech]    = useState<string | null>(null);
+  const [petSpeechKey, setPetSpeechKey] = useState(0);
+  const speechTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  /** Show a message in the pet's speech bubble (auto-dismisses). */
+  const petSay = useCallback((msg: string, durationMs = 3000) => {
+    clearTimeout(speechTimerRef.current);
+    setPetSpeech(msg);
+    setPetSpeechKey(k => k + 1);
+    speechTimerRef.current = setTimeout(() => setPetSpeech(null), durationMs);
+  }, []);
+
+  useEffect(() => () => clearTimeout(speechTimerRef.current), []);
+
+  // ── Pet-click / petting cooldown ────────────────────────────
+  /** Timestamp (ms) when the next happiness-boost pet is allowed. */
+  const petCooldownEndRef = useRef<number>(0);
+
+  const handlePetClick = useCallback(() => {
+    const now  = Date.now();
+    const mood = computeMood(pet);
+    if (mood === 'dead') return;
+
+    const canBoost = now >= petCooldownEndRef.current && !pet.isSleeping;
+
+    if (canBoost) {
+      // Give a small happiness nudge and show affectionate dialog
+      dispatch({ type: 'PET' });
+      petCooldownEndRef.current = now + PET_COOLDOWN_MS;
+      petSay(pickRandom(PET_BOOST_DIALOGS), 3_000);
+    } else {
+      // On cooldown or sleeping — just react verbally, no stat boost
+      const pool = CLICK_DIALOGS[mood] ?? CLICK_DIALOGS.neutral;
+      if (pool.length > 0) petSay(pickRandom(pool), 2_500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet, dispatch, petSay]);
+  // ────────────────────────────────────────────────────────────
 
   // ── Sprite action animation ─────────────────────────────────
   const [activeAnimation, setActiveAnimation] = useState<string | null>(null);
@@ -61,21 +223,21 @@ export function PetScreen() {
   // Track alerted thresholds to avoid repeating every render
   const alertedRef = useRef<Set<string>>(new Set());
 
-  // Alert on low stats
+  // Alert on low stats — shown in the pet's speech bubble
   useEffect(() => {
     const checks: Array<[boolean, string, string]> = [
-      [pet.hunger      <= WARNING && pet.hunger      > 0, 'hunger',      "I'm hungry! 🍔"],
-      [pet.happiness   <= WARNING && pet.happiness   > 0, 'happiness',   "I want to play! ⭐"],
-      [pet.energy      <= WARNING && pet.energy      > 0, 'energy',      "I'm so sleepy… 😴"],
-      [pet.cleanliness <= WARNING && pet.cleanliness > 0, 'cleanliness', "I'm dirty! 🫧"],
-      [pet.health      <= WARNING && pet.health      > 0, 'health',      "I don't feel well! ❤️"],
-      [pet.isSick,                                         'sick',        "I'm sick! 🤒"],
-      [pet.hunger      === 0,                              'hunger0',     "I'm starving! 😭"],
+      [pet.hunger      <= WARNING && pet.hunger      > 0, 'hunger',      pickRandom(ALERT_DIALOGS.hunger)],
+      [pet.happiness   <= WARNING && pet.happiness   > 0, 'happiness',   pickRandom(ALERT_DIALOGS.happiness)],
+      [pet.energy      <= WARNING && pet.energy      > 0, 'energy',      pickRandom(ALERT_DIALOGS.energy)],
+      [pet.cleanliness <= WARNING && pet.cleanliness > 0, 'cleanliness', pickRandom(ALERT_DIALOGS.cleanliness)],
+      [pet.health      <= WARNING && pet.health      > 0, 'health',      pickRandom(ALERT_DIALOGS.health)],
+      [pet.isSick,                                         'sick',        pickRandom(ALERT_DIALOGS.sick)],
+      [pet.hunger      === 0,                              'hunger0',     pickRandom(ALERT_DIALOGS.hunger0)],
     ];
     checks.forEach(([cond, key, msg]) => {
       if (cond && !alertedRef.current.has(key)) {
         alertedRef.current.add(key);
-        addToast(msg, key === 'health' || key === 'sick' || key === 'hunger0' ? 'error' : 'warning');
+        petSay(msg, 5_000);
         if (settings.soundEnabled) playAlertSoundLocal();
       } else if (!cond) {
         alertedRef.current.delete(key);
@@ -114,11 +276,11 @@ export function PetScreen() {
     resumeAudio();
 
     if (actionType === 'FEED') {
-      if (pet.isSleeping)     { addToast("Zzz… Let me sleep! 😴", 'warning'); return; }
-      if (pet.hunger >= 90)   { addToast("I'm not hungry yet! 😌", 'info'); return; }
+      if (pet.isSleeping)   { petSay(pickRandom(ACTION_DIALOGS.sleeping));    return; }
+      if (pet.hunger >= 90) { petSay(pickRandom(ACTION_DIALOGS.feedFull));    return; }
       dispatch({ type: 'FEED' });
       triggerSprite('eating', 1800);
-      addToast("Yum! 🍎", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.feed));
       cooldowns.FEED.trigger();
       if (settings.soundEnabled) playEatSound();
       if (!achievements.includes('first_feed')) {
@@ -126,11 +288,11 @@ export function PetScreen() {
         addToast('Achievement: First Feed! 🌟', 'success');
       }
     } else if (actionType === 'PLAY') {
-      if (pet.isSleeping)    { addToast("Zzz… Let me sleep! 😴", 'warning'); return; }
-      if (pet.energy < 15)   { addToast("Too tired to play! 😴", 'warning'); return; }
+      if (pet.isSleeping)  { petSay(pickRandom(ACTION_DIALOGS.sleeping));  return; }
+      if (pet.energy < 15) { petSay(pickRandom(ACTION_DIALOGS.playTired)); return; }
       dispatch({ type: 'PLAY' });
       triggerSprite('playing', 2000);
-      addToast("That was fun! ⭐", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.play));
       cooldowns.PLAY.trigger();
       if (settings.soundEnabled) playPlaySound();
       if (!achievements.includes('first_play')) {
@@ -138,9 +300,10 @@ export function PetScreen() {
         addToast('Achievement: First Play! 🎮', 'success');
       }
     } else if (actionType === 'CLEAN') {
+      if (pet.isSleeping) { petSay(pickRandom(ACTION_DIALOGS.sleeping)); return; }
       dispatch({ type: 'CLEAN' });
       triggerSprite('grooming', 2500);
-      addToast("All clean! 🫧", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.clean));
       cooldowns.CLEAN.trigger();
       if (settings.soundEnabled) playCleanSound();
       if (!achievements.includes('first_clean')) {
@@ -149,23 +312,23 @@ export function PetScreen() {
       }
     } else if (actionType === 'SLEEP') {
       dispatch({ type: 'SLEEP' });
-      addToast("Sweet dreams… 💤", 'info');
+      petSay(pickRandom(ACTION_DIALOGS.sleep));
       cooldowns.SLEEP.trigger();
       if (settings.soundEnabled) playSleepSound();
     } else if (actionType === 'WAKE') {
       dispatch({ type: 'WAKE' });
       triggerSprite('stretching', 1600);
-      addToast("Good morning! ☀️", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.wake));
       cooldowns.SLEEP.trigger();
       if (settings.soundEnabled) playWakeSound();
     } else if (actionType === 'MEDICINE') {
       if (!pet.isSick) {
-        addToast("I'm not sick! 😊", 'info');
+        petSay(pickRandom(ACTION_DIALOGS.medicineHealthy));
         return;
       }
       dispatch({ type: 'MEDICINE' });
       triggerSprite('medicine', 1700);
-      addToast("Feeling better! 💊", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.medicine));
       cooldowns.MEDICINE.trigger();
       if (settings.soundEnabled) playMedicineSound();
       if (!achievements.includes('pet_recovered')) {
@@ -173,15 +336,15 @@ export function PetScreen() {
         addToast('Achievement: Recovery! 🩺', 'success');
       }
     } else if (actionType === 'PRAISE') {
-      if (pet.isSleeping) { addToast("Shh, pet is sleeping! 😴", 'info'); return; }
+      if (pet.isSleeping) { petSay(pickRandom(ACTION_DIALOGS.sleeping)); return; }
       dispatch({ type: 'PRAISE' });
       triggerSprite('praising', 1800);
-      addToast("Thanks! I feel special! ⭐", 'success');
+      petSay(pickRandom(ACTION_DIALOGS.praise));
       cooldowns.PRAISE.trigger();
       if (settings.soundEnabled) playPraiseSound();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pet, achievements, settings.soundEnabled, cooldowns, dispatch, addToast, triggerSprite]);
+  }, [pet, achievements, settings.soundEnabled, cooldowns, dispatch, addToast, petSay, triggerSprite]);
 
   const evoProgress = evolutionProgress(pet);
   const nextAge     = nextEvolutionAge(pet);
@@ -284,6 +447,9 @@ export function PetScreen() {
             onEvolutionEnd={() => dispatch({ type: 'CLEAR_PENDING_EVOLUTION' })}
             petName={pet.name}
             activeAnimation={activeAnimation}
+            speechMessage={petSpeech}
+            speechMessageKey={petSpeechKey}
+            onPetClick={handlePetClick}
           />
         </section>
 
