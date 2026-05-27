@@ -549,11 +549,13 @@ export function PetScreen() {
                   className="side-menu__item"
                   onClick={() => { navigate(screen); setMenuOpen(false); }}
                 >
-                  <span aria-hidden="true">{emoji}</span> {label}
+                  <span aria-hidden="true" style={{ flexShrink: 0 }}>{emoji}</span>
+                  <span style={{ flexShrink: 0 }}>{label}</span>
                   {screen === 'accessory' && (
                     <span style={{
                       marginLeft:   'auto',
-                      display:      'flex',
+                      flexShrink:   0,
+                      display:      'inline-flex',
                       alignItems:   'center',
                       gap:          3,
                       fontFamily:   'var(--font-display)',
