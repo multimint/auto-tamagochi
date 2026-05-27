@@ -28,6 +28,10 @@ interface PetAvatarProps {
   onCleanClick?:     () => void;
   /** Called when the room background is clicked in cleaning mode — cancels mode */
   onCancelClean?:    () => void;
+  /** Position of the food bowl placed in the room (null = no food) */
+  foodPos?:          { x: number; y: number } | null;
+  /** Fired when the pet walks to the food and starts eating */
+  onFoodConsumed?:   () => void;
 }
 
 /** A floating heart / sparkle that pops on click */
@@ -254,6 +258,58 @@ function SpeechBubble({ text, facingLeft }: { text: string; facingLeft: boolean 
   );
 }
 
+/* ── Food bowl (pixel-art, placed in room when player clicks Feed) ── */
+
+function FoodBowl() {
+  const [phase, setPhase] = useState<'in' | 'idle'>('in');
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Pulsing glow ring */}
+      <div style={{
+        position:      'absolute',
+        inset:         -10,
+        borderRadius:  '50%',
+        background:    'radial-gradient(circle, rgba(255,200,50,0.45) 0%, transparent 70%)',
+        animation:     'food-hunger-ring 1.4s ease-in-out infinite',
+        pointerEvents: 'none',
+      }} />
+      {/* Bowl body */}
+      <div
+        style={{
+          animation:       phase === 'in'
+            ? 'food-drop-in 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards'
+            : 'food-idle-sway 2.0s ease-in-out infinite',
+          transformOrigin: 'center bottom',
+          filter:          'drop-shadow(0 0 7px rgba(255,200,50,0.65)) drop-shadow(0 2px 5px rgba(0,0,0,0.22))',
+        }}
+        onAnimationEnd={phase === 'in' ? () => setPhase('idle') : undefined}
+      >
+        <svg width="40" height="30" viewBox="0 0 40 30" shapeRendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          {/* Steam wisps */}
+          <rect x="14" y="0"  width="2" height="3" fill="#EEE4D4" opacity="0.75" />
+          <rect x="19" y="-1" width="2" height="4" fill="#EEE4D4" opacity="0.65" />
+          <rect x="24" y="0"  width="2" height="3" fill="#EEE4D4" opacity="0.75" />
+          {/* Colourful kibble / food bits */}
+          <rect x="11" y="5"  width="4" height="4" fill="#FF6644" />
+          <rect x="16" y="4"  width="5" height="4" fill="#FFAA22" />
+          <rect x="22" y="5"  width="4" height="4" fill="#FF6644" />
+          <rect x="14" y="9"  width="3" height="3" fill="#FFAA22" />
+          <rect x="19" y="8"  width="4" height="3" fill="#FFCC44" />
+          <rect x="24" y="9"  width="3" height="3" fill="#FF8833" />
+          {/* Bowl rim */}
+          <rect x="7"  y="12" width="26" height="4" fill="#E8C090" />
+          {/* Bowl body */}
+          <rect x="5"  y="16" width="30" height="6" fill="#C8A070" />
+          {/* Bowl base */}
+          <rect x="9"  y="22" width="22" height="4" fill="#A07050" />
+          {/* Shine highlight */}
+          <rect x="9"  y="13" width="5"  height="2" fill="white"  opacity="0.35" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 /* ── Room background ── */
 
 function RoomBackground() {
@@ -365,6 +421,8 @@ export function PetAvatar({
   isCleaningMode,
   onCleanClick,
   onCancelClean,
+  foodPos,
+  onFoodConsumed,
 }: PetAvatarProps) {
   const Sprite     = SPRITE_MAP[stage] ?? BabySprite;
   const baseClass  = getAnimClass(mood, pendingEvolution, activeAnimation);
@@ -416,6 +474,11 @@ export function PetAvatar({
 
   useEffect(() => () => clearTimeout(petBounceTimer.current), []);
 
+  /* ── Stable ref so the walk timer can call the latest onFoodConsumed
+        without being listed in the effect's dep array ── */
+  const onFoodConsumedRef = useRef(onFoodConsumed);
+  useEffect(() => { onFoodConsumedRef.current = onFoodConsumed; }, [onFoodConsumed]);
+
   /* ── Walking state ── */
   const [walkPos,    setWalkPos]    = useState<WalkPos>({ x: 50, y: 70 });
   const [facingLeft, setFacingLeft] = useState(false);
@@ -447,7 +510,7 @@ export function PetAvatar({
     }, rand(IDLE_MIN_MS, IDLE_MAX_MS));
   }, []);
 
-  // Start / stop walking loop based on mood + activeAnimation
+  // Start / stop walking loop based on mood + activeAnimation + food target
   useEffect(() => {
     if (isDead) {
       stopWalk();
@@ -465,11 +528,28 @@ export function PetAvatar({
       setIsWalking(false);
       return;
     }
+    if (foodPos) {
+      // Walk straight to the food bowl
+      clearTimeout(walkTimer.current);
+      setWalkPos(prev => {
+        setFacingLeft(foodPos.x < prev.x);
+        return { x: foodPos.x, y: foodPos.y };
+      });
+      setIsWalking(true);
+      walkTimer.current = setTimeout(() => {
+        setIsWalking(false);
+        // Notify parent — it will apply stats + trigger eating animation
+        onFoodConsumedRef.current?.();
+        // Resume normal walking after eating animation (~1.8 s)
+        walkTimer.current = setTimeout(scheduleWalk, 1_900);
+      }, WALK_MS + 120);
+      return () => clearTimeout(walkTimer.current);
+    }
     // alive, awake, no action — start the walk loop
     scheduleWalk();
     return () => clearTimeout(walkTimer.current);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDead, isSleeping, activeAnimation, isCleaningMode]);
+  }, [isDead, isSleeping, activeAnimation, isCleaningMode, foodPos]);
 
   /* ── Depth scale from y position ── */
   // y=18 (back) → 0.68   y=80 (front) → 1.08
@@ -510,6 +590,26 @@ export function PetAvatar({
     >
       {/* Room background — renders behind the cat */}
       <RoomBackground />
+
+      {/* Food bowl — placed on the floor when player clicks Feed.
+          Key changes when a new bowl is placed, remounting the component
+          so the drop-in animation replays. */}
+      {foodPos && (
+        <div
+          key={`food-${Math.round(foodPos.x)}-${Math.round(foodPos.y)}`}
+          style={{
+            position:        'absolute',
+            left:            `${foodPos.x}%`,
+            top:             `${foodPos.y}%`,
+            transform:       `translate(-50%, -50%) scale(${(0.68 + (foodPos.y / 100) * 0.40).toFixed(3)})`,
+            transformOrigin: 'center bottom',
+            pointerEvents:   'none',
+            zIndex:          1,
+          }}
+        >
+          <FoodBowl />
+        </div>
+      )}
 
       {/* Cat walker — absolutely positioned, CSS transition does the movement.
           ⚠️  ONLY handles left/top/scale/flip transforms — never apply a CSS

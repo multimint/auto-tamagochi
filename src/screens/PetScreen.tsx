@@ -194,6 +194,10 @@ export function PetScreen() {
   const [isCleaningMode, setIsCleaningMode] = useState(false);
   const blushCursorRef = useRef<HTMLDivElement>(null);
 
+  // ── Food in room ─────────────────────────────────────────────
+  /** Position of the food bowl on the floor (null = no food visible). */
+  const [foodPos, setFoodPos] = useState<{ x: number; y: number } | null>(null);
+
   // ── Pet speech bubble ────────────────────────────────────────
   const [petSpeech,    setPetSpeech]    = useState<string | null>(null);
   const [petSpeechKey, setPetSpeechKey] = useState(0);
@@ -337,17 +341,14 @@ export function PetScreen() {
     resumeAudio();
 
     if (actionType === 'FEED') {
-      if (pet.isSleeping)   { petSay(pickRandom(ACTION_DIALOGS.sleeping));    return; }
-      if (pet.hunger >= 90) { petSay(pickRandom(ACTION_DIALOGS.feedFull));    return; }
-      dispatch({ type: 'FEED' });
-      triggerSprite('eating', 1800);
-      petSay(pickRandom(ACTION_DIALOGS.feed));
+      if (pet.isSleeping)   { petSay(pickRandom(ACTION_DIALOGS.sleeping));  return; }
+      if (pet.hunger >= 90) { petSay(pickRandom(ACTION_DIALOGS.feedFull));  return; }
+      // Place the food bowl on the floor — the pet will walk to it and eat it.
+      // Stats + sound fire via handleFoodConsumed when the pet arrives.
+      const fx = 18 + Math.random() * 57;   // x: 18–75 %
+      const fy = 68 + Math.random() * 10;   // y: 68–78 % (floor band)
+      setFoodPos({ x: fx, y: fy });
       cooldowns.FEED.trigger();
-      if (settings.soundEnabled) playEatSound();
-      if (!achievements.includes('first_feed')) {
-        dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_feed' } });
-        addToast('Achievement: First Feed! 🌟', 'success');
-      }
     } else if (actionType === 'PLAY') {
       if (pet.isSleeping)  { petSay(pickRandom(ACTION_DIALOGS.sleeping));  return; }
       if (pet.energy < 15) { petSay(pickRandom(ACTION_DIALOGS.playTired)); return; }
@@ -421,6 +422,20 @@ export function PetScreen() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, triggerSprite, petSay, cooldowns, settings.soundEnabled, achievements, addToast]);
+
+  /** Called by PetAvatar when the pet walks to the food bowl and eats it. */
+  const handleFoodConsumed = useCallback(() => {
+    setFoodPos(null);
+    dispatch({ type: 'FEED' });
+    triggerSprite('eating', 1800);
+    petSay(pickRandom(ACTION_DIALOGS.feed));
+    if (settings.soundEnabled) playEatSound();
+    if (!achievements.includes('first_feed')) {
+      dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: { id: 'first_feed' } });
+      addToast('Achievement: First Feed! 🌟', 'success');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, triggerSprite, petSay, settings.soundEnabled, achievements, addToast]);
 
   const evoProgress = evolutionProgress(pet);
   const nextAge     = nextEvolutionAge(pet);
@@ -553,6 +568,8 @@ export function PetScreen() {
             isCleaningMode={isCleaningMode}
             onCleanClick={handleCleanPet}
             onCancelClean={() => setIsCleaningMode(false)}
+            foodPos={foodPos}
+            onFoodConsumed={handleFoodConsumed}
           />
         </section>
 
