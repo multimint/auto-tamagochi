@@ -150,11 +150,13 @@ export function PetScreen() {
     } else if (actionType === 'SLEEP') {
       dispatch({ type: 'SLEEP' });
       addToast("Sweet dreams… 💤", 'info');
+      cooldowns.SLEEP.trigger();
       if (settings.soundEnabled) playSleepSound();
     } else if (actionType === 'WAKE') {
       dispatch({ type: 'WAKE' });
       triggerSprite('stretching', 1600);
       addToast("Good morning! ☀️", 'success');
+      cooldowns.SLEEP.trigger();
       if (settings.soundEnabled) playWakeSound();
     } else if (actionType === 'MEDICINE') {
       if (!pet.isSick) {
@@ -319,81 +321,83 @@ export function PetScreen() {
 
         {/* Action buttons */}
         <section className="action-grid" aria-label="Pet actions">
-          {!pet.isSleeping ? (
-            <>
-              <ActionButton
-                label="Feed"
-                icon={<FeedIcon size={24} />}
-                onClick={() => handleAction('FEED')}
-                isOnCooldown={cooldowns.FEED.isOnCooldown}
-                cooldownMs={cooldowns.FEED.remainingMs}
-                cooldownTotalMs={cooldowns.FEED.totalMs}
-                disabled={pet.stage === 'dead'}
-                accent="rgba(255,204,92,0.28)"
-              />
-              <ActionButton
-                label="Play"
-                icon={<PlayIcon size={24} />}
-                onClick={() => handleAction('PLAY')}
-                isOnCooldown={cooldowns.PLAY.isOnCooldown}
-                cooldownMs={cooldowns.PLAY.remainingMs}
-                cooldownTotalMs={cooldowns.PLAY.totalMs}
-                disabled={pet.stage === 'dead' || pet.energy < 15}
-                ariaLabel={pet.energy < 15 ? 'Play (too tired)' : 'Play'}
-                accent="rgba(120,216,152,0.28)"
-              />
-              <ActionButton
-                label="Clean"
-                icon={<CleanIcon size={24} />}
-                onClick={() => handleAction('CLEAN')}
-                isOnCooldown={cooldowns.CLEAN.isOnCooldown}
-                cooldownMs={cooldowns.CLEAN.remainingMs}
-                cooldownTotalMs={cooldowns.CLEAN.totalMs}
-                disabled={pet.stage === 'dead'}
-                accent="rgba(126,200,227,0.28)"
-              />
-              <ActionButton
-                label="Sleep"
-                icon={<SleepIcon size={24} />}
-                onClick={() => handleAction('SLEEP')}
-                disabled={pet.stage === 'dead'}
-                accent="rgba(180,150,220,0.24)"
-              />
-              <ActionButton
-                label="Medicine"
-                icon={<MedicineIcon size={24} />}
-                onClick={() => handleAction('MEDICINE')}
-                isOnCooldown={cooldowns.MEDICINE.isOnCooldown}
-                cooldownMs={cooldowns.MEDICINE.remainingMs}
-                cooldownTotalMs={cooldowns.MEDICINE.totalMs}
-                disabled={pet.stage === 'dead' || !pet.isSick}
-                ariaLabel={!pet.isSick ? 'Medicine (not sick)' : 'Give medicine'}
-                accent="rgba(255,126,144,0.28)"
-              />
-              <ActionButton
-                label="Praise"
-                icon={<PraiseIcon size={24} />}
-                onClick={() => handleAction('PRAISE')}
-                isOnCooldown={cooldowns.PRAISE.isOnCooldown}
-                cooldownMs={cooldowns.PRAISE.remainingMs}
-                cooldownTotalMs={cooldowns.PRAISE.totalMs}
-                disabled={pet.stage === 'dead'}
-                accent="rgba(255,107,157,0.28)"
-              />
-            </>
+          <ActionButton
+            label="Feed"
+            icon={<FeedIcon size={24} />}
+            onClick={() => handleAction('FEED')}
+            isOnCooldown={cooldowns.FEED.isOnCooldown}
+            cooldownMs={cooldowns.FEED.remainingMs}
+            cooldownTotalMs={cooldowns.FEED.totalMs}
+            disabled={pet.stage === 'dead' || pet.isSleeping}
+            accent="rgba(255,204,92,0.28)"
+          />
+          <ActionButton
+            label="Play"
+            icon={<PlayIcon size={24} />}
+            onClick={() => handleAction('PLAY')}
+            isOnCooldown={cooldowns.PLAY.isOnCooldown}
+            cooldownMs={cooldowns.PLAY.remainingMs}
+            cooldownTotalMs={cooldowns.PLAY.totalMs}
+            disabled={pet.stage === 'dead' || pet.isSleeping || pet.energy < 15}
+            ariaLabel={pet.energy < 15 ? 'Play (too tired)' : 'Play'}
+            accent="rgba(120,216,152,0.28)"
+          />
+          <ActionButton
+            label="Clean"
+            icon={<CleanIcon size={24} />}
+            onClick={() => handleAction('CLEAN')}
+            isOnCooldown={cooldowns.CLEAN.isOnCooldown}
+            cooldownMs={cooldowns.CLEAN.remainingMs}
+            cooldownTotalMs={cooldowns.CLEAN.totalMs}
+            disabled={pet.stage === 'dead' || pet.isSleeping}
+            accent="rgba(126,200,227,0.28)"
+          />
+          {/* Sleep / Wake Up — swaps based on isSleeping, shares a 10 s cooldown */}
+          {pet.isSleeping ? (
+            <ActionButton
+              label="Wake Up ☀️"
+              icon={<SleepIcon size={24} />}
+              onClick={() => handleAction('WAKE')}
+              isOnCooldown={cooldowns.SLEEP.isOnCooldown}
+              cooldownMs={cooldowns.SLEEP.remainingMs}
+              cooldownTotalMs={cooldowns.SLEEP.totalMs}
+              disabled={pet.stage === 'dead'}
+              ariaLabel="Wake up your pet"
+              accent="rgba(255,204,92,0.28)"
+            />
           ) : (
-            // Sleeping — only Wake Up
-            <div style={{ gridColumn: '1 / -1' }}>
-              <ActionButton
-                label="Wake Up ☀️"
-                icon={<SleepIcon size={24} />}
-                onClick={() => handleAction('WAKE')}
-                variant="secondary"
-                ariaLabel="Wake up your pet"
-                accent="rgba(255,204,92,0.28)"
-              />
-            </div>
+            <ActionButton
+              label="Sleep"
+              icon={<SleepIcon size={24} />}
+              onClick={() => handleAction('SLEEP')}
+              isOnCooldown={cooldowns.SLEEP.isOnCooldown}
+              cooldownMs={cooldowns.SLEEP.remainingMs}
+              cooldownTotalMs={cooldowns.SLEEP.totalMs}
+              disabled={pet.stage === 'dead'}
+              accent="rgba(180,150,220,0.24)"
+            />
           )}
+          <ActionButton
+            label="Medicine"
+            icon={<MedicineIcon size={24} />}
+            onClick={() => handleAction('MEDICINE')}
+            isOnCooldown={cooldowns.MEDICINE.isOnCooldown}
+            cooldownMs={cooldowns.MEDICINE.remainingMs}
+            cooldownTotalMs={cooldowns.MEDICINE.totalMs}
+            disabled={pet.stage === 'dead' || pet.isSleeping || !pet.isSick}
+            ariaLabel={!pet.isSick ? 'Medicine (not sick)' : 'Give medicine'}
+            accent="rgba(255,126,144,0.28)"
+          />
+          <ActionButton
+            label="Praise"
+            icon={<PraiseIcon size={24} />}
+            onClick={() => handleAction('PRAISE')}
+            isOnCooldown={cooldowns.PRAISE.isOnCooldown}
+            cooldownMs={cooldowns.PRAISE.remainingMs}
+            cooldownTotalMs={cooldowns.PRAISE.totalMs}
+            disabled={pet.stage === 'dead' || pet.isSleeping}
+            accent="rgba(255,107,157,0.28)"
+          />
         </section>
       </div>
 
